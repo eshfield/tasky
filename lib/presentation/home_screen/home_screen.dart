@@ -10,160 +10,245 @@ import 'package:flutter/material.dart';
 
 const appTopBarHeight = 60.0;
 const appTopBarAnimationDuration = Duration(milliseconds: 350);
-const appTopBarScrollExtent = 60;
+const curve = Curves.easeInOutCubicEmphasized;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  static HomeScreenState of(BuildContext context) =>
+      _HomeScreenInheritedModel.of(
+        context,
+        listen: false,
+      ).state;
+
+  static List<Task> tasksToDisplayOf(BuildContext context) =>
+      _HomeScreenInheritedModel.of(
+        context,
+        aspect: _Aspects.tasksToDisplay,
+      ).tasksToDisplay;
+
+  static bool showAppBarOf(BuildContext context) =>
+      _HomeScreenInheritedModel.of(
+        context,
+        aspect: _Aspects.showAppBar,
+      ).showAppBar;
+
+  static bool showOnlyDoneTasksOf(BuildContext context) =>
+      _HomeScreenInheritedModel.of(
+        context,
+        aspect: _Aspects.showOnlyDoneTasks,
+      ).showOnlyDoneTasks;
+
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final _scrollController = ScrollController();
-  late List<Task> _tasks;
-  var _showAppBar = false;
-  var _showOnlyDoneTasks = false;
+class HomeScreenState extends State<HomeScreen> {
+  final scrollController = ScrollController();
+  late List<Task> tasks;
+  var showAppBar = false;
+  var showOnlyDoneTasks = false;
 
-  List<Task> get _tasksToDisplay => _showOnlyDoneTasks
-      ? _tasks.where((task) => task.isDone).toList()
-      : _tasks;
+  List<Task> get tasksToDisplay =>
+      showOnlyDoneTasks ? tasks.where((task) => task.isDone).toList() : tasks;
 
   @override
   void initState() {
     super.initState();
-    _tasks = tasks;
-    _scrollController.addListener(_handleScroll);
+    tasks = mockTasks;
+    scrollController.addListener(handleScroll);
   }
 
-  void _handleScroll() {
-    final offset = _scrollController.offset;
-    if (offset > appTopBarScrollExtent && !_showAppBar) {
+  void handleScroll() {
+    final offset = scrollController.offset;
+    if (offset > appTopBarHeight && !showAppBar) {
       setState(() {
-        _showAppBar = true;
+        showAppBar = true;
       });
     }
-    if (offset < appTopBarScrollExtent && _showAppBar) {
+    if (offset < appTopBarHeight && showAppBar) {
       setState(() {
-        _showAppBar = false;
+        showAppBar = false;
       });
     }
   }
 
-  void _addTask(Task taskToAdd) {
+  void addTask(Task taskToAdd) {
     setState(() {
-      _tasks = [taskToAdd, ..._tasks];
+      tasks = [taskToAdd, ...tasks];
     });
   }
 
-  void _removeTask(int taskIdToRemove) {
+  void removeTask(int taskIdToRemove) {
     setState(() {
-      _tasks = _tasks.where((task) => task.id != taskIdToRemove).toList();
+      tasks = tasks.where((task) => task.id != taskIdToRemove).toList();
     });
   }
 
-  void _toggleTaskIsDone(int taskIdToMark) {
+  void toggleTaskAsDone(int taskIdToMark) {
     setState(() {
-      _tasks = _tasks.map((task) {
+      tasks = tasks.map((task) {
         if (task.id != taskIdToMark) return task;
         return task.copyWith(isDone: !task.isDone);
       }).toList();
     });
   }
 
-  void _toggleShowOnlyDoneTasks() {
+  void toggleShowOnlyDoneTasks() {
     setState(() {
-      _showOnlyDoneTasks = !_showOnlyDoneTasks;
+      showOnlyDoneTasks = !showOnlyDoneTasks;
     });
-    _scrollController.jumpTo(0);
+    scrollController.animateTo(0,
+        duration: appTopBarAnimationDuration, curve: curve);
   }
 
-  Future<void> _createTask() async {
+  Future<void> createTask() async {
     final route = MaterialPageRoute<Task>(
       builder: (context) => const AddTaskScreen(),
     );
     final newTask = await Navigator.of(context).push<Task>(route);
     if (newTask != null) {
-      _addTask(newTask);
+      addTask(newTask);
     }
   }
 
-  int _countDoneTasks() =>
-      _tasks.fold(0, (acc, task) => acc + (task.isDone ? 1 : 0));
+  int countDoneTasks() =>
+      tasks.fold(0, (acc, task) => acc + (task.isDone ? 1 : 0));
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.backPrimary,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            _content(),
-            _topBar(context),
-          ],
+    return _HomeScreenInheritedModel(
+      state: this,
+      child: Scaffold(
+        backgroundColor: context.appColors.backPrimary,
+        body: const SafeArea(
+          child: Stack(
+            children: [
+              _Content(),
+              _TopBar(),
+            ],
+          ),
         ),
+        floatingActionButton: const _Fab(),
       ),
-      floatingActionButton: _fab(),
     );
   }
 
-  Widget _content() {
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+}
+
+enum _Aspects {
+  tasksToDisplay,
+  showAppBar,
+  showOnlyDoneTasks,
+}
+
+class _HomeScreenInheritedModel extends InheritedModel<_Aspects> {
+  final HomeScreenState state;
+  final List<Task> tasksToDisplay;
+  final bool showAppBar;
+  final bool showOnlyDoneTasks;
+
+  _HomeScreenInheritedModel({
+    required this.state,
+    required super.child,
+  })  : tasksToDisplay = state.tasksToDisplay,
+        showAppBar = state.showAppBar,
+        showOnlyDoneTasks = state.showOnlyDoneTasks;
+
+  static _HomeScreenInheritedModel of(
+    BuildContext context, {
+    bool listen = true,
+    _Aspects? aspect,
+  }) =>
+      maybeOf(context, listen: listen, aspect: aspect) ??
+      (throw Exception(
+          '$_HomeScreenInheritedModel was not found in the context'));
+
+  static _HomeScreenInheritedModel? maybeOf(
+    BuildContext context, {
+    required bool listen,
+    _Aspects? aspect,
+  }) =>
+      listen
+          ? InheritedModel.inheritFrom(context, aspect: aspect)
+          : context.getInheritedWidgetOfExactType();
+
+  @override
+  bool updateShouldNotify(covariant _HomeScreenInheritedModel oldWidget) =>
+      true;
+
+  @override
+  bool updateShouldNotifyDependent(
+    covariant _HomeScreenInheritedModel oldWidget,
+    Set<_Aspects> dependencies,
+  ) =>
+      (dependencies.contains(_Aspects.tasksToDisplay) &&
+          tasksToDisplay != oldWidget.tasksToDisplay) ||
+      (dependencies.contains(_Aspects.showAppBar) &&
+          showAppBar != oldWidget.showAppBar) ||
+      (dependencies.contains(_Aspects.showOnlyDoneTasks) &&
+          showOnlyDoneTasks != oldWidget.showOnlyDoneTasks);
+}
+
+class _Content extends StatelessWidget {
+  const _Content();
+
+  @override
+  Widget build(BuildContext context) {
+    final tasksToDisplay = HomeScreen.tasksToDisplayOf(context);
     return CustomScrollView(
-      controller: _scrollController,
+      controller: HomeScreen.of(context).scrollController,
       slivers: [
         SliverToBoxAdapter(
           child: Header(
-            doneTaskCount: _countDoneTasks(),
-            shouldShowOnlyDoneTasks: _showOnlyDoneTasks,
-            toggleShowOnlyDoneTasks: _toggleShowOnlyDoneTasks,
+            doneTaskCount: HomeScreen.of(context).countDoneTasks(),
+            shouldShowOnlyDoneTasks: HomeScreen.showOnlyDoneTasksOf(context),
+            toggleShowOnlyDoneTasks:
+                HomeScreen.of(context).toggleShowOnlyDoneTasks,
           ),
         ),
-        _tasksToDisplay.isEmpty
-            ? SliverFillRemaining(
+        tasksToDisplay.isEmpty
+            ? const SliverFillRemaining(
                 hasScrollBody: false,
-                child: _empty(),
+                child: _Empty(),
               )
-            : TaskList(
-                _tasksToDisplay,
-                removeTask: _removeTask,
-                markTaskAsDone: _toggleTaskIsDone,
-                createTask: _createTask,
-              ),
+            : const TaskList(),
       ],
     );
   }
+}
 
-  Widget _empty() {
-    return Center(
-      child: Text(
-        _showOnlyDoneTasks ? context.l10n.noDoneTasks : context.l10n.noTasks,
-        style: context.appTextStyles.subhead.copyWith(
-          color: context.appColors.labelSecondary,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
+class _TopBar extends StatelessWidget {
+  const _TopBar();
 
-  Widget _topBar(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
+    final showAppBar = HomeScreen.showAppBarOf(context);
     return AnimatedPositioned(
-      top: _showAppBar ? 0 : -appTopBarHeight,
+      top: showAppBar ? 0 : -appTopBarHeight,
       left: 0,
       right: 0,
-      curve: Curves.easeInOutCubicEmphasized,
+      curve: curve,
       duration: appTopBarAnimationDuration,
       child: AnimatedOpacity(
-        opacity: _showAppBar ? 1 : 0,
-        curve: Curves.easeInOutCubicEmphasized,
+        opacity: showAppBar ? 1 : 0,
+        curve: curve,
         duration: appTopBarAnimationDuration,
         child: TopBar(
           title: context.l10n.appTitle,
           trailing: Padding(
             padding: const EdgeInsets.only(right: 16),
             child: IconButton(
-              onPressed: _toggleShowOnlyDoneTasks,
+              onPressed: HomeScreen.of(context).toggleShowOnlyDoneTasks,
               icon: Icon(
-                _showOnlyDoneTasks ? Icons.visibility_off : Icons.visibility,
+                HomeScreen.showOnlyDoneTasksOf(context)
+                    ? Icons.visibility_off
+                    : Icons.visibility,
                 color: context.appColors.blue,
               ),
             ),
@@ -172,13 +257,37 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
-  Widget _fab() {
+class _Empty extends StatelessWidget {
+  const _Empty();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        HomeScreen.showOnlyDoneTasksOf(context)
+            ? context.l10n.noDoneTasks
+            : context.l10n.noTasks,
+        style: context.appTextStyles.subhead.copyWith(
+          color: context.appColors.labelSecondary,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+class _Fab extends StatelessWidget {
+  const _Fab();
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: FloatingActionButton(
         backgroundColor: context.appColors.blue,
-        onPressed: _createTask,
+        onPressed: HomeScreen.of(context).createTask,
         tooltip: context.l10n.addTaskTooltip,
         child: Icon(
           Icons.add,
@@ -186,11 +295,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }

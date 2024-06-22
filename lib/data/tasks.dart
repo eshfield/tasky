@@ -1,6 +1,6 @@
 import 'package:app/domain/models/task.dart';
 
-final tasks = [
+final mockTasks = [
   Task(
     text: 'Купить что-то',
     priority: Priority.low,

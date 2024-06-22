@@ -1,25 +1,15 @@
-import 'package:app/domain/models/task.dart';
 import 'package:app/l10n/l10n_extension.dart';
+import 'package:app/presentation/home_screen/home_screen.dart';
 import 'package:app/presentation/home_screen/widgets/task_list_tile.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class TaskList extends StatelessWidget {
-  final List<Task> tasks;
-  final void Function(int) removeTask;
-  final void Function(int) markTaskAsDone;
-  final Future<void> Function() createTask;
-
-  const TaskList(
-    this.tasks, {
-    super.key,
-    required this.removeTask,
-    required this.markTaskAsDone,
-    required this.createTask,
-  });
+  const TaskList({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final tasks = HomeScreen.tasksToDisplayOf(context);
     return SliverPadding(
       padding: const EdgeInsets.all(16),
       sliver: DecoratedSliver(
@@ -34,20 +24,21 @@ class TaskList extends StatelessWidget {
             itemCount: tasks.length + 1,
             itemBuilder: (_, index) {
               return index != tasks.length
-                  ? TaskListTile(
-                      tasks[index],
-                      removeTask: removeTask,
-                      markTaskAsDone: markTaskAsDone,
-                    )
-                  : _createTaskButton(context);
+                  ? TaskListTile(tasks[index])
+                  : const _CreateTaskButton();
             },
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _createTaskButton(BuildContext context) {
+class _CreateTaskButton extends StatelessWidget {
+  const _CreateTaskButton();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -57,7 +48,7 @@ class TaskList extends StatelessWidget {
         ),
       ),
       child: TextButton(
-        onPressed: createTask,
+        onPressed: HomeScreen.of(context).createTask,
         style: TextButton.styleFrom(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
