@@ -1,0 +1,24 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Мои дела",
+  "addTaskTooltip": "Добавить задачу",
+  "tasksDone": "Выполнено — {count}",
+  "@tasksDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "createTask": "Добавить задачу",
+  "save": "СОХРАНИТЬ",
+  "addTaskTextHint": "Что надо сделать…",
+  "addTaskTextError": "Напишите что нужно сделать",
+  "addTaskPriority": "Приоритет",
+  "addTaskPriorityNo": "Нет",
+  "addTaskPriorityLow": "Низкий",
+  "addTaskPriorityHigh": "Высокий",
+  "addTaskDeadline": "Сделать до",
+  "noTasks": "Вы ещё не добавили ни одной задачи",
+  "noDoneTasks": "Нет ни одной выполненной задачи\nДля просмотра всех дел отключите фильтр"
+}

@@ -1,0 +1,48 @@
+import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:flutter/material.dart';
+
+class AppTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String? hintText;
+  final int? maxLines;
+  final String? Function(String?)? validator;
+
+  const AppTextField({
+    super.key,
+    required this.controller,
+    this.maxLines,
+    this.hintText,
+    this.validator,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final border = OutlineInputBorder(
+      borderSide: BorderSide(color: context.appColors.supportSeparator),
+    );
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: context.appColors.backSecondary,
+        errorStyle: context.appTextStyles.subhead,
+        border: border,
+        errorBorder: border.copyWith(
+          borderSide: BorderSide(color: context.appColors.red),
+        ),
+        enabledBorder: border,
+        focusedBorder: border,
+        hintText: hintText,
+        hintStyle: context.appTextStyles.body.copyWith(
+          color: context.appColors.labelTertiary,
+        ),
+      ),
+      maxLines: maxLines,
+      style: context.appTextStyles.body.copyWith(
+        color: context.appColors.labelPrimary,
+      ),
+      textCapitalization: TextCapitalization.sentences,
+      validator: validator,
+    );
+  }
+}
