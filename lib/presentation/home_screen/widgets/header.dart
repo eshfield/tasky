@@ -1,18 +1,11 @@
 import 'package:app/l10n/l10n_extension.dart';
+import 'package:app/presentation/home_screen/home_screen.dart';
+import 'package:app/presentation/home_screen/widgets/done_tasks_visibility_button.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
-  final int doneTaskCount;
-  final bool shouldShowOnlyDoneTasks;
-  final VoidCallback toggleShowOnlyDoneTasks;
-
-  const Header({
-    super.key,
-    required this.doneTaskCount,
-    required this.shouldShowOnlyDoneTasks,
-    required this.toggleShowOnlyDoneTasks,
-  });
+  const Header({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +28,7 @@ class Header extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  context.l10n.tasksDone(doneTaskCount),
+                  context.l10n.tasksDone(HomeScreen.doneTaskCountOf(context)),
                   style: context.appTextStyles.body.copyWith(
                     color: context.appColors.labelTertiary,
                   ),
@@ -43,15 +36,7 @@ class Header extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              IconButton(
-                onPressed: toggleShowOnlyDoneTasks,
-                icon: Icon(
-                  shouldShowOnlyDoneTasks
-                      ? Icons.visibility_off
-                      : Icons.visibility,
-                  color: context.appColors.blue,
-                ),
-              ),
+              const DoneTasksVisibilityButton(),
             ],
           ),
         ],
