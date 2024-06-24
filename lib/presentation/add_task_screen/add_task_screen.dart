@@ -59,11 +59,13 @@ class AddTaskScreenState extends State<AddTaskScreen> {
       child: Scaffold(
         backgroundColor: context.appColors.backPrimary,
         body: const SafeArea(
-          child: Column(
-            children: [
-              _TopBar(),
-              Expanded(child: _Content()),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _TopBar(),
+                _Content(),
+              ],
+            ),
           ),
         ),
       ),
