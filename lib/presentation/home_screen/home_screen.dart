@@ -5,7 +5,7 @@ import 'package:app/presentation/add_task_screen/add_task_screen.dart';
 import 'package:app/presentation/home_screen/widgets/done_tasks_visibility_button.dart';
 import 'package:app/presentation/home_screen/widgets/header.dart';
 import 'package:app/presentation/home_screen/widgets/task_list.dart';
-import 'package:app/presentation/home_screen/widgets/top_bar.dart';
+import 'package:app/presentation/widgets/app_top_bar.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -244,7 +244,7 @@ class _TopBar extends StatelessWidget {
         opacity: showAppBar ? 1 : 0,
         curve: curve,
         duration: appTopBarAnimationDuration,
-        child: TopBar(
+        child: AppTopBar(
           title: context.l10n.appTitle,
           trailing: const Padding(
             padding: EdgeInsets.only(right: 16),

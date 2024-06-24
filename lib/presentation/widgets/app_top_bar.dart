@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 const buttonPadding = 16.0 - (48.0 - 24.0) / 2;
 
-class TopBar extends StatelessWidget {
+class AppTopBar extends StatelessWidget {
   final Widget? leading;
   final String? title;
   final Widget? trailing;
 
-  const TopBar({
+  const AppTopBar({
     super.key,
     this.leading,
     this.title,

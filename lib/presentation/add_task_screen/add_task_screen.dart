@@ -1,6 +1,6 @@
 import 'package:app/domain/models/task.dart';
 import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/home_screen/widgets/top_bar.dart';
+import 'package:app/presentation/widgets/app_top_bar.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:app/presentation/widgets/app_date_picker.dart';
 import 'package:app/presentation/widgets/app_dropdown_menu.dart';
@@ -133,7 +133,7 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TopBar(
+    return AppTopBar(
       leading: IconButton(
         onPressed: () => Navigator.of(context).pop(),
         icon: Icon(
