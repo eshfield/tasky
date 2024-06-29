@@ -25,6 +25,12 @@
 ## APK
 [Загрузить файл .apk](https://github.com/eshfield/tasky/releases)
 
+## Локальный запуск
+Для корректной работы при локальном запуске необходимо указать токен авторизации:
+```
+--dart-define=TOKEN=%YOUR_TOKEN%
+```
+
 ## Скриншоты
 ![Screenshots1](screenshots/screenshots1.png)
 ![Screenshots2](screenshots/screenshots2.png)
