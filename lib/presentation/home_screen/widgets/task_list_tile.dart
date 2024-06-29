@@ -1,9 +1,10 @@
+import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/models/task.dart';
 import 'package:app/l10n/l10n_extension.dart';
 import 'package:app/presentation/home_screen/home_screen.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TaskListTile extends StatelessWidget {
   final Task task;
@@ -23,19 +24,20 @@ class TaskListTile extends StatelessWidget {
           confirmDismiss: (direction) async {
             // no need to dismiss task with "mark as done" action
             if (direction == DismissDirection.startToEnd) {
-              HomeScreen.of(context).toggleTaskAsDone(task.id);
+              context.read<BlocDispatcher>().toggleTaskAsDone(task);
               return false;
             }
             return true;
           },
-          onDismissed: (_) => HomeScreen.of(context).removeTask(task.id),
+          onDismissed: (_) =>
+              context.read<BlocDispatcher>().removeTask(task.id),
           child: Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _MarkAsDoneButton(),
+                _MarkAsDoneCheckbox(),
                 Expanded(child: _TextLine()),
                 SizedBox(width: 12),
                 _EditButton(),
@@ -112,19 +114,33 @@ class _SecondaryBackground extends StatelessWidget {
   }
 }
 
-class _MarkAsDoneButton extends StatelessWidget {
-  const _MarkAsDoneButton();
+class _MarkAsDoneCheckbox extends StatelessWidget {
+  const _MarkAsDoneCheckbox();
 
   @override
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
-    return IconButton(
-      onPressed: () => HomeScreen.of(context).toggleTaskAsDone(task.id),
-      icon: task.isDone
-          ? const _DoneCheckbox()
-          : task.priority == Priority.high
-              ? const _BlankPriorityCheckbox()
-              : const _BlankCheckbox(),
+    final isImportant = task.importance == Importance.important;
+    return Checkbox(
+      fillColor: WidgetStateProperty.resolveWith(
+        (states) {
+          if (states.contains(WidgetState.selected)) {
+            return context.appColors.green;
+          }
+          if (isImportant) {
+            return context.appColors.red.withOpacity(0.16);
+          }
+          return Colors.transparent;
+        },
+      ),
+      side: BorderSide(
+        color: isImportant
+            ? context.appColors.red
+            : context.appColors.supportSeparator,
+        width: 2,
+      ),
+      value: task.isDone,
+      onChanged: (_) => context.read<BlocDispatcher>().toggleTaskAsDone(task),
     );
   }
 }
@@ -134,10 +150,9 @@ class _EditButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final task = TaskListTileInheritedWidget.of(context).task;
     return IconButton(
-      onPressed: () {
-        Logger().d('Open the task edit screen');
-      },
+      onPressed: () => HomeScreen.of(context).openTaskScreen(task),
       icon: Icon(
         Icons.edit,
         color: context.appColors.labelTertiary,
@@ -177,14 +192,14 @@ class _TaskText extends StatelessWidget {
           WidgetSpan(
             child: Padding(
               padding: const EdgeInsets.only(right: 4),
-              child: switch (task.priority) {
-                Priority.no => const SizedBox.shrink(),
-                Priority.low => Icon(
+              child: switch (task.importance) {
+                Importance.low => Icon(
                     Icons.arrow_downward,
                     color: context.appColors.grayLight,
                     size: 20,
                   ),
-                Priority.high => Icon(
+                Importance.basic => const SizedBox.shrink(),
+                Importance.important => Icon(
                     Icons.arrow_upward,
                     color: context.appColors.red,
                     size: 20,
@@ -226,57 +241,6 @@ class _Deadline extends StatelessWidget {
           color: context.appColors.labelTertiary,
         ),
       ),
-    );
-  }
-}
-
-class _DoneCheckbox extends StatelessWidget {
-  const _DoneCheckbox();
-
-  @override
-  Widget build(BuildContext context) {
-    return Icon(
-      Icons.check_box,
-      color: context.appColors.green,
-    );
-  }
-}
-
-class _BlankPriorityCheckbox extends StatelessWidget {
-  const _BlankPriorityCheckbox();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: Stack(
-        children: [
-          Center(
-            child: Container(
-              width: 18,
-              height: 18,
-              color: context.appColors.red.withOpacity(0.16),
-            ),
-          ),
-          Icon(
-            Icons.check_box_outline_blank,
-            color: context.appColors.red,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BlankCheckbox extends StatelessWidget {
-  const _BlankCheckbox();
-
-  @override
-  Widget build(BuildContext context) {
-    return Icon(
-      Icons.check_box_outline_blank,
-      color: context.appColors.supportSeparator,
     );
   }
 }

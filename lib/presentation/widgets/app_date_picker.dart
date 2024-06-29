@@ -104,24 +104,20 @@ Future<DateTime?> showAppDatePicker(
             yearOverlayColor:
                 WidgetStateProperty.resolveWith((Set<WidgetState> states) {
               if (states.contains(WidgetState.selected)) {
-                if (states.contains(WidgetState.pressed)) {
+                if (states.contains(WidgetState.pressed) ||
+                    states.contains(WidgetState.focused)) {
                   return context.appColors.labelPrimary.withOpacity(0.1);
                 }
                 if (states.contains(WidgetState.hovered)) {
                   return context.appColors.labelPrimary.withOpacity(0.08);
                 }
-                if (states.contains(WidgetState.focused)) {
-                  return context.appColors.labelPrimary.withOpacity(0.1);
-                }
               } else {
-                if (states.contains(WidgetState.pressed)) {
+                if (states.contains(WidgetState.pressed) ||
+                    states.contains(WidgetState.focused)) {
                   return context.appColors.white.withOpacity(0.1);
                 }
                 if (states.contains(WidgetState.hovered)) {
                   return context.appColors.white.withOpacity(0.08);
-                }
-                if (states.contains(WidgetState.focused)) {
-                  return context.appColors.white.withOpacity(0.1);
                 }
               }
               return null;

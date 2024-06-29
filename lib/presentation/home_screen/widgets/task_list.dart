@@ -1,3 +1,4 @@
+import 'package:app/domain/models/task.dart';
 import 'package:app/l10n/l10n_extension.dart';
 import 'package:app/presentation/home_screen/home_screen.dart';
 import 'package:app/presentation/home_screen/widgets/task_list_tile.dart';
@@ -5,11 +6,12 @@ import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class TaskList extends StatelessWidget {
-  const TaskList({super.key});
+  final List<Task> tasks;
+
+  const TaskList(this.tasks, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    final tasks = HomeScreen.tasksToDisplayOf(context);
     return SliverPadding(
       padding: const EdgeInsets.all(16),
       sliver: DecoratedSliver(
@@ -48,7 +50,7 @@ class _CreateTaskButton extends StatelessWidget {
         ),
       ),
       child: TextButton(
-        onPressed: HomeScreen.of(context).createTask,
+        onPressed: HomeScreen.of(context).openTaskScreen,
         style: TextButton.styleFrom(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
