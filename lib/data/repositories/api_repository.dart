@@ -1,42 +1,27 @@
-import 'dart:io';
-
 import 'package:app/data/dto/task_dto.dart';
 import 'package:app/data/dto/tasks_dto.dart';
 import 'package:app/data/sources/local_storage.dart';
 import 'package:app/data/sources/api_client.dart';
 import 'package:app/domain/models/task.dart';
-import 'package:dio/dio.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-
-const tokenArgName = 'TOKEN';
 
 class ApiRepository {
-  late final ApiClient apiClient;
+  final ApiClient apiClient;
   final LocalStorage localStorage;
 
-  late int _revision;
-
-  ApiRepository(this.localStorage) {
-    final dio = Dio();
-    const token = String.fromEnvironment(tokenArgName);
-    dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
-    dio.options.contentType = Headers.jsonContentType;
-    dio.interceptors.add(PrettyDioLogger(
-      requestHeader: true,
-      requestBody: true,
-    ));
-    apiClient = ApiClient(dio);
+  ApiRepository(this.apiClient, this.localStorage) {
     _revision = localStorage.loadRevision() ?? 0;
   }
 
-  void updateRevision(int revision) {
-    _revision = revision;
-    localStorage.saveRevision(revision);
+  late int _revision;
+
+  void setRevision(int value) {
+    _revision = value;
+    localStorage.saveRevision(value);
   }
 
   Future<List<Task>> getTasks() async {
     final responseTasksDto = await apiClient.getTasks();
-    updateRevision(responseTasksDto.revision);
+    setRevision(responseTasksDto.revision);
     return responseTasksDto.tasks;
   }
 
@@ -45,7 +30,7 @@ class ApiRepository {
       requestTasksDto: TasksDto(tasks, _revision),
       revision: _revision,
     );
-    updateRevision(responseTasksDto.revision);
+    setRevision(responseTasksDto.revision);
     return responseTasksDto.tasks;
   }
 
@@ -54,7 +39,7 @@ class ApiRepository {
       requestTaskDto: TaskDto(task, _revision),
       revision: _revision,
     );
-    updateRevision(responseTaskDto.revision);
+    setRevision(responseTaskDto.revision);
     return responseTaskDto.task;
   }
 
@@ -64,7 +49,7 @@ class ApiRepository {
       requestTaskDto: TaskDto(task, _revision),
       revision: _revision,
     );
-    updateRevision(responseTaskDto.revision);
+    setRevision(responseTaskDto.revision);
     return responseTaskDto.task;
   }
 
@@ -73,7 +58,7 @@ class ApiRepository {
       id: taskId,
       revision: _revision,
     );
-    updateRevision(responseTaskDto.revision);
+    setRevision(responseTaskDto.revision);
     return responseTaskDto.task;
   }
 }

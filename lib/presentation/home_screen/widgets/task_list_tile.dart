@@ -4,7 +4,7 @@ import 'package:app/l10n/l10n_extension.dart';
 import 'package:app/presentation/home_screen/home_screen.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class TaskListTile extends StatelessWidget {
   final Task task;
@@ -13,6 +13,7 @@ class TaskListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final blocDispatcher = GetIt.I<BlocDispatcher>();
     return TaskListTileInheritedWidget(
       task: task,
       child: ClipRRect(
@@ -24,13 +25,12 @@ class TaskListTile extends StatelessWidget {
           confirmDismiss: (direction) async {
             // no need to dismiss task with "mark as done" action
             if (direction == DismissDirection.startToEnd) {
-              context.read<BlocDispatcher>().toggleTaskAsDone(task);
+              blocDispatcher.toggleTaskAsDone(task);
               return false;
             }
             return true;
           },
-          onDismissed: (_) =>
-              context.read<BlocDispatcher>().removeTask(task.id),
+          onDismissed: (_) => blocDispatcher.removeTask(task.id),
           child: Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -121,6 +121,7 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
     final isImportant = task.importance == Importance.important;
+    final blocDispatcher = GetIt.I<BlocDispatcher>();
     return Checkbox(
       fillColor: WidgetStateProperty.resolveWith(
         (states) {
@@ -140,7 +141,7 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
         width: 2,
       ),
       value: task.isDone,
-      onChanged: (_) => context.read<BlocDispatcher>().toggleTaskAsDone(task),
+      onChanged: (_) => blocDispatcher.toggleTaskAsDone(task),
     );
   }
 }

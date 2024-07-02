@@ -17,7 +17,7 @@ abstract class ApiUrl {
 
 @RestApi(baseUrl: ApiUrl.baseUrl)
 abstract class ApiClient {
-  factory ApiClient(Dio dio, {String baseUrl}) = _ApiClient;
+  factory ApiClient(Dio dio) = _ApiClient;
 
   @GET(ApiUrl.list)
   Future<TasksDto> getTasks();

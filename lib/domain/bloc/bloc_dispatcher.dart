@@ -5,6 +5,7 @@ import 'package:app/data/sources/local_storage.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/domain/models/task.dart';
+import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 
 class BlocDispatcher {
@@ -19,29 +20,39 @@ class BlocDispatcher {
     required this.localStorage,
     required this.networkStatus,
   }) {
+    _needToSync = localStorage.loadNeedToSync() ?? false;
+
     // save tasks to local storage
     tasksCubit.stream.listen((state) {
       if (state.isInitialized) {
         localStorage.saveTasks(state.tasks);
       }
     });
+
     // sync data when backed to online
     networkStatus.addListener(() {
       if (networkStatus.isOnline && _needToSync) {
         final storedTasks = localStorage.loadTasks();
         if (storedTasks == null) {
-          Logger().w('storedTasks is null');
+          _logger.w('storedTasks is null');
           return;
         }
         final storedRevision = localStorage.loadRevision() ?? 0;
         syncBloc.add(SyncUpdateTasksRequested(storedTasks, storedRevision));
+        _setNeedToSync(false);
       }
     });
+    init();
   }
 
-  var _needToSync = false;
+  late bool _needToSync;
 
-  void _markAsNeedToSync() => _needToSync = true;
+  final _logger = GetIt.I<Logger>();
+
+  void _setNeedToSync(bool value) {
+    _needToSync = value;
+    localStorage.saveNeedToSync(value);
+  }
 
   void init() {
     final storedTasks = localStorage.loadTasks();
@@ -64,14 +75,14 @@ class BlocDispatcher {
     tasksCubit.addTask(task);
     networkStatus.isOnline
         ? syncBloc.add(SyncAddTaskRequested(task))
-        : _markAsNeedToSync();
+        : _setNeedToSync(true);
   }
 
   void updateTask(Task task) {
     tasksCubit.updateTask(task);
     networkStatus.isOnline
         ? syncBloc.add(SyncUpdateTaskRequested(task))
-        : _markAsNeedToSync();
+        : _setNeedToSync(true);
   }
 
   void toggleTaskAsDone(Task task) {
@@ -86,6 +97,6 @@ class BlocDispatcher {
     tasksCubit.removeTask(id);
     networkStatus.isOnline
         ? syncBloc.add(SyncRemoveTaskRequested(id))
-        : _markAsNeedToSync();
+        : _setNeedToSync(true);
   }
 }

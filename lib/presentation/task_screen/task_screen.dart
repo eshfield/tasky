@@ -8,7 +8,7 @@ import 'package:app/presentation/widgets/app_dropdown_menu.dart';
 import 'package:app/presentation/widgets/app_switch.dart';
 import 'package:app/presentation/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -326,13 +326,14 @@ class _RemoveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final blocDispatcher = GetIt.I<BlocDispatcher>();
     final task = TaskScreen.of(context).widget.taskToEdit;
     return FilledButton(
       style: FilledButton.styleFrom(
         backgroundColor: context.appColors.red,
       ),
       onPressed: () {
-        context.read<BlocDispatcher>().removeTask(task!.id);
+        blocDispatcher.removeTask(task!.id);
         Navigator.of(context).pop();
       },
       child: Text(
@@ -350,6 +351,8 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceId = GetIt.I<String>();
+    final blocDispatcher = GetIt.I<BlocDispatcher>();
     return FilledButton(
       style: FilledButton.styleFrom(
         backgroundColor: context.appColors.blue,
@@ -360,7 +363,6 @@ class _SaveButton extends StatelessWidget {
         final text = TaskScreen.of(context).textController.text.trim();
         final importance = TaskScreen.of(context).importance;
         final now = DateTime.now();
-        final deviceId = context.read<String>();
         if (TaskScreen.of(context).isEditing) {
           final taskToEdit = TaskScreen.of(context).widget.taskToEdit;
           final editedTask = taskToEdit!.copyWith(
@@ -370,7 +372,7 @@ class _SaveButton extends StatelessWidget {
             changedAt: now,
             lastUpdatedBy: deviceId,
           );
-          context.read<BlocDispatcher>().updateTask(editedTask);
+          blocDispatcher.updateTask(editedTask);
         } else {
           final taskToAdd = Task(
             id: const Uuid().v4(),
@@ -381,7 +383,7 @@ class _SaveButton extends StatelessWidget {
             changedAt: now,
             lastUpdatedBy: deviceId,
           );
-          context.read<BlocDispatcher>().addTask(taskToAdd);
+          blocDispatcher.addTask(taskToAdd);
         }
         Navigator.of(context).pop();
       },

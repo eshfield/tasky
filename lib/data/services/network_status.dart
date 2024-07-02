@@ -11,7 +11,6 @@ class NetworkStatus extends ChangeNotifier {
   Future<void> init() async {
     final result = await Connectivity().checkConnectivity();
     _checkResult(result, checkIdentity: false);
-    notifyListeners();
     Connectivity().onConnectivityChanged.listen(_checkResult);
   }
 

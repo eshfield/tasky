@@ -2,6 +2,7 @@ import 'package:app/data/repositories/api_repository.dart';
 import 'package:app/domain/models/task.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 
 class SyncBloc extends Bloc<SyncEvent, SyncState> {
@@ -15,7 +16,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           final tasks = await apiRepository.getTasks();
           emit(GetTasksSuccess(tasks));
         } catch (error, stackTrace) {
-          Logger().w(error, stackTrace: stackTrace);
+          _logger.w(error, stackTrace: stackTrace);
           emit(GetTasksFailure());
         }
       },
@@ -26,11 +27,11 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (event, emit) async {
         emit(SyncInProgress());
         try {
-          apiRepository.updateRevision(event.revision);
+          apiRepository.setRevision(event.revision);
           await apiRepository.updateTasks(event.tasks);
           emit(SyncSuccess());
         } catch (error, stackTrace) {
-          Logger().w(error, stackTrace: stackTrace);
+          _logger.w(error, stackTrace: stackTrace);
           emit(SyncFailure());
         }
       },
@@ -44,7 +45,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           await apiRepository.addTask(event.task);
           emit(SyncSuccess());
         } catch (error, stackTrace) {
-          Logger().w(error, stackTrace: stackTrace);
+          _logger.w(error, stackTrace: stackTrace);
           emit(SyncFailure());
         }
       },
@@ -58,7 +59,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           await apiRepository.updateTask(event.task);
           emit(SyncSuccess());
         } catch (error, stackTrace) {
-          Logger().w(error, stackTrace: stackTrace);
+          _logger.w(error, stackTrace: stackTrace);
           emit(SyncFailure());
         }
       },
@@ -72,13 +73,15 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           await apiRepository.removeTask(event.id);
           emit(SyncSuccess());
         } catch (error, stackTrace) {
-          Logger().w(error, stackTrace: stackTrace);
+          _logger.w(error, stackTrace: stackTrace);
           emit(SyncFailure());
         }
       },
       transformer: sequential(),
     );
   }
+
+  final _logger = GetIt.I<Logger>();
 }
 
 // STATE

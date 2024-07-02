@@ -6,6 +6,7 @@ import 'package:app/presentation/home_screen/widgets/tasks_visibility_button.dar
 import 'package:app/presentation/theme/app_theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class Header extends StatelessWidget {
   const Header({super.key});
@@ -62,14 +63,15 @@ class _SyncIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final networkStatus = GetIt.I<NetworkStatus>();
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: ListenableBuilder(
-        listenable: context.read<NetworkStatus>(),
+        listenable: networkStatus,
         builder: (context, child) {
-          final service = context.read<NetworkStatus>();
-          if (service.isOnline) {
+          if (networkStatus.isOnline) {
             return BlocBuilder<SyncBloc, SyncState>(
+              bloc: GetIt.I<SyncBloc>(),
               builder: (context, state) {
                 final icon = switch (state) {
                   SyncInProgress() => Icons.cloud_sync,
@@ -114,6 +116,7 @@ class _DoneTasksCounter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: BlocBuilder<TasksCubit, TasksState>(
+        bloc: GetIt.I<TasksCubit>(),
         builder: (context, state) {
           return Text(
             context.l10n.tasksDone(state.doneTaskCount),
