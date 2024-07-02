@@ -1,0 +1,10 @@
+targets:
+  $default:
+    builders:
+      json_serializable:json_serializable:
+        generate_for:
+          - lib/data/dto/*.dart
+          - lib/domain/models/*.dart
+      retrofit_generator:
+        generate_for:
+          - lib/data/sources/api_client.dart
