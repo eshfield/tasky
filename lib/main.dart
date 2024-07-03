@@ -1,58 +1,43 @@
-import 'package:app/presentation/home_screen/home_screen.dart';
+import 'package:app/domain/bloc/app_init_cubit.dart';
 import 'package:app/presentation/theme/theme.dart';
-import 'package:app/presentation/widgets/app_error.dart';
-import 'package:app/presentation/widgets/app_loader.dart';
-import 'package:app/service_locator.dart';
+import 'package:app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:logger/logger.dart';
+import 'package:go_router/go_router.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const MainApp());
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   @override
-  State<MainApp> createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  late final Future _future;
-
-  @override
-  void initState() {
-    super.initState();
-    _future = initDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _future,
-      builder: (context, snapshot) {
-        late final Widget home;
-        if (snapshot.hasData) {
-          home = const HomeScreen();
-        } else if (snapshot.hasError) {
-          Logger().e(snapshot.error, stackTrace: snapshot.stackTrace);
-          home = const AppInitErrorScreen();
-        } else {
-          home = const AppLoader();
-        }
-        return MaterialApp(
-          darkTheme: AppTheme.dark,
-          home: home,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          theme: AppTheme.light,
-          title: 'Tasky',
-        );
-      },
+    final routingConfig = ValueNotifier(const RoutingConfig(routes: []));
+    return BlocProvider(
+      create: (context) => AppInitCubit(),
+      child: BlocBuilder<AppInitCubit, AppInitState>(
+        builder: (context, state) {
+          routingConfig.value = switch (state.status) {
+            AppInitStatus.loading => loadingConfig,
+            AppInitStatus.success => successConfig,
+            AppInitStatus.failure => failureConfig,
+          };
+          return MaterialApp.router(
+            darkTheme: AppTheme.dark,
+            theme: AppTheme.light,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: GoRouter.routingConfig(routingConfig: routingConfig),
+            title: 'Tasky',
+          );
+        },
+      ),
     );
   }
 }

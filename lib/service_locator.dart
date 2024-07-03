@@ -15,9 +15,9 @@ import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final sl = GetIt.instance;
+Future<void> initDependencies() async {
+  final sl = GetIt.instance;
 
-Future<bool> initDependencies() async {
   sl.registerSingleton(Logger());
 
   final dio = Dio();
@@ -57,7 +57,4 @@ Future<bool> initDependencies() async {
   // BlocDispatcher listens for NetworkStatus notifications,
   // so the listener must be ready before notification starts
   await networkStatus.init();
-
-  // need something to return in order to use FutureBuilder snapshot.hasData
-  return true;
 }

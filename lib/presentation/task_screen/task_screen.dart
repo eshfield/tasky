@@ -7,14 +7,16 @@ import 'package:app/presentation/widgets/app_date_picker.dart';
 import 'package:app/presentation/widgets/app_dropdown_menu.dart';
 import 'package:app/presentation/widgets/app_switch.dart';
 import 'package:app/presentation/widgets/app_text_field.dart';
+import 'package:app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 class TaskScreen extends StatefulWidget {
-  final Task? taskToEdit;
+  final Task? task;
 
-  const TaskScreen({super.key, this.taskToEdit});
+  const TaskScreen(this.task, {super.key});
 
   static TaskScreenState of(BuildContext context) =>
       _TaskScreenInheritedModel.of(
@@ -48,7 +50,7 @@ class TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
-    final task = widget.taskToEdit;
+    final task = widget.task;
     isEditing = task != null;
     if (isEditing) {
       textController.text = task!.text;
@@ -151,7 +153,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppTopBar(
       leading: IconButton(
-        onPressed: () => Navigator.of(context).pop(),
+        onPressed: () => context.goNamed(AppRoute.home.name),
         icon: Icon(
           Icons.close,
           color: context.appColors.labelPrimary,
@@ -327,14 +329,14 @@ class _RemoveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final blocDispatcher = GetIt.I<BlocDispatcher>();
-    final task = TaskScreen.of(context).widget.taskToEdit;
+    final task = TaskScreen.of(context).widget.task;
     return FilledButton(
       style: FilledButton.styleFrom(
         backgroundColor: context.appColors.red,
       ),
       onPressed: () {
         blocDispatcher.removeTask(task!.id);
-        Navigator.of(context).pop();
+        context.goNamed(AppRoute.home.name);
       },
       child: Text(
         context.l10n.remove,
@@ -364,7 +366,7 @@ class _SaveButton extends StatelessWidget {
         final importance = TaskScreen.of(context).importance;
         final now = DateTime.now();
         if (TaskScreen.of(context).isEditing) {
-          final taskToEdit = TaskScreen.of(context).widget.taskToEdit;
+          final taskToEdit = TaskScreen.of(context).widget.task;
           final editedTask = taskToEdit!.copyWith(
             text: text,
             importance: importance,
@@ -385,7 +387,7 @@ class _SaveButton extends StatelessWidget {
           );
           blocDispatcher.addTask(taskToAdd);
         }
-        Navigator.of(context).pop();
+        context.goNamed(AppRoute.home.name);
       },
       child: Text(
         context.l10n.save,

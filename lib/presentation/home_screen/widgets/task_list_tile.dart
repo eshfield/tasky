@@ -1,10 +1,11 @@
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/models/task.dart';
 import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/home_screen/home_screen.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class TaskListTile extends StatelessWidget {
   final Task task;
@@ -153,7 +154,7 @@ class _EditButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
     return IconButton(
-      onPressed: () => HomeScreen.of(context).openTaskScreen(task),
+      onPressed: () => context.goNamed(AppRoute.task.name, extra: task),
       icon: Icon(
         Icons.edit,
         color: context.appColors.labelTertiary,

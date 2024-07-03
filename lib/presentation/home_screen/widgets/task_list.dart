@@ -1,9 +1,10 @@
 import 'package:app/domain/models/task.dart';
 import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/home_screen/home_screen.dart';
 import 'package:app/presentation/home_screen/widgets/task_list_tile.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:app/router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class TaskList extends StatelessWidget {
   final List<Task> tasks;
@@ -50,7 +51,7 @@ class _CreateTaskButton extends StatelessWidget {
         ),
       ),
       child: TextButton(
-        onPressed: HomeScreen.of(context).openTaskScreen,
+        onPressed: () => context.goNamed(AppRoute.task.name),
         style: TextButton.styleFrom(
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,

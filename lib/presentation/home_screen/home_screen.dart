@@ -3,9 +3,7 @@ import 'package:app/data/services/network_status.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/domain/models/task.dart';
 import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/task_screen/task_screen.dart';
 import 'package:app/presentation/home_screen/widgets/tasks_visibility_button.dart';
 import 'package:app/presentation/home_screen/widgets/header.dart';
 import 'package:app/presentation/home_screen/widgets/task_list.dart';
@@ -14,9 +12,11 @@ import 'package:app/presentation/widgets/app_loader.dart';
 import 'package:app/presentation/widgets/app_snack_bar.dart';
 import 'package:app/presentation/widgets/app_top_bar.dart';
 import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -64,13 +64,6 @@ class HomeScreenState extends State<HomeScreen> {
           ? context.appColors.green
           : context.appColors.gray,
     );
-  }
-
-  void openTaskScreen([Task? taskToEdit]) {
-    final route = MaterialPageRoute(
-      builder: (context) => TaskScreen(taskToEdit: taskToEdit),
-    );
-    Navigator.of(context).push(route);
   }
 
   @override
@@ -253,7 +246,7 @@ class _Fab extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: FloatingActionButton(
         backgroundColor: context.appColors.blue,
-        onPressed: HomeScreen.of(context).openTaskScreen,
+        onPressed: () => context.goNamed(AppRoute.task.name),
         tooltip: context.l10n.addTaskTooltip,
         child: Icon(
           Icons.add,

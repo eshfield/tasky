@@ -55,20 +55,3 @@ class AppError extends StatelessWidget {
     );
   }
 }
-
-class AppInitErrorScreen extends StatelessWidget {
-  const AppInitErrorScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.backPrimary,
-      body: SafeArea(
-        child: AppError(
-          title: context.l10n.initErrorTitle,
-          text: context.l10n.initErrorText,
-        ),
-      ),
-    );
-  }
-}
