@@ -57,10 +57,4 @@ Future<void> initDependencies() async {
   // BlocDispatcher listens for NetworkStatus notifications,
   // so the listener must be ready before notification starts
   await networkStatus.init();
-
-  // TODO remove
-  await Future.delayed(const Duration(seconds: 2));
-
-  // TODO remove
-  // throw Exception('MY ERROR');
 }
