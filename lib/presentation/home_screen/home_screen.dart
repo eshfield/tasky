@@ -199,7 +199,7 @@ class _TopBar extends StatelessWidget {
         curve: appCurve,
         duration: appTopBarAnimationDuration,
         child: AppTopBar(
-          title: context.l10n.appTitle,
+          title: context.l10n.homeTitle,
           trailing: const Padding(
             padding: EdgeInsets.only(right: 16),
             child: TasksVisibilityButton(),
@@ -247,7 +247,6 @@ class _Fab extends StatelessWidget {
       child: FloatingActionButton(
         backgroundColor: context.appColors.blue,
         onPressed: () => context.goNamed(AppRoute.task.name),
-        tooltip: context.l10n.addTaskTooltip,
         child: Icon(
           Icons.add,
           color: context.appColors.white,

@@ -1,11 +1,11 @@
 import 'package:app/domain/bloc/app_init_cubit.dart';
+import 'package:app/l10n/l10n_extension.dart';
 import 'package:app/presentation/theme/theme.dart';
 import 'package:app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,25 +18,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final routingConfig = ValueNotifier(const RoutingConfig(routes: []));
     return BlocProvider(
       create: (context) => AppInitCubit(),
-      child: BlocBuilder<AppInitCubit, AppInitState>(
-        builder: (context, state) {
-          routingConfig.value = switch (state.status) {
-            AppInitStatus.loading => loadingConfig,
-            AppInitStatus.success => successConfig,
-            AppInitStatus.failure => failureConfig,
-          };
-          return MaterialApp.router(
-            darkTheme: AppTheme.dark,
-            theme: AppTheme.light,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: GoRouter.routingConfig(routingConfig: routingConfig),
-            title: 'Tasky',
-          );
-        },
+      child: BlocListener<AppInitCubit, AppInitState>(
+        listener: (context, state) => routerConfig.refresh(),
+        child: MaterialApp.router(
+          darkTheme: AppTheme.dark,
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: routerConfig,
+          onGenerateTitle: (context) => context.l10n.appTitle,
+        ),
       ),
     );
   }

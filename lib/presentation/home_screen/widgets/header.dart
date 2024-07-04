@@ -49,7 +49,7 @@ class _Title extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Text(
-        context.l10n.appTitle,
+        context.l10n.homeTitle,
         style: context.appTextStyles.titleLarge.copyWith(
           color: context.appColors.labelPrimary,
         ),
