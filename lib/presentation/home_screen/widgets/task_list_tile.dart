@@ -9,14 +9,22 @@ import 'package:go_router/go_router.dart';
 
 class TaskListTile extends StatelessWidget {
   final Task task;
+  final bool isFirst;
+  final bool isLast;
 
-  const TaskListTile(this.task, {super.key});
+  const TaskListTile(
+    this.task, {
+    super.key,
+    required this.isFirst,
+    required this.isLast,
+  });
 
   @override
   Widget build(BuildContext context) {
     final blocDispatcher = GetIt.I<BlocDispatcher>();
     return TaskListTileInheritedWidget(
       task: task,
+      isFirst: isFirst,
       child: ClipRRect(
         clipBehavior: Clip.hardEdge,
         child: Dismissible(
@@ -34,6 +42,10 @@ class TaskListTile extends StatelessWidget {
           onDismissed: (_) => blocDispatcher.removeTask(task.id),
           child: Container(
             alignment: Alignment.centerLeft,
+            margin: EdgeInsets.only(
+              top: isFirst ? 8 : 0,
+              bottom: isLast ? 8 : 0,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,10 +65,12 @@ class TaskListTile extends StatelessWidget {
 
 class TaskListTileInheritedWidget extends InheritedWidget {
   final Task task;
+  final bool isFirst;
 
   const TaskListTileInheritedWidget({
     super.key,
     required this.task,
+    required this.isFirst,
     required super.child,
   });
 
@@ -78,8 +92,14 @@ class _Background extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: context.appColors.green,
+    final isFirst = TaskListTileInheritedWidget.of(context).isFirst;
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appColors.green,
+        borderRadius: isFirst
+            ? const BorderRadius.only(topLeft: Radius.circular(12))
+            : BorderRadius.zero,
+      ),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Padding(
@@ -99,8 +119,14 @@ class _SecondaryBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: context.appColors.red,
+    final isFirst = TaskListTileInheritedWidget.of(context).isFirst;
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appColors.red,
+        borderRadius: isFirst
+            ? const BorderRadius.only(topRight: Radius.circular(12))
+            : BorderRadius.zero,
+      ),
       child: Align(
         alignment: Alignment.centerRight,
         child: Padding(

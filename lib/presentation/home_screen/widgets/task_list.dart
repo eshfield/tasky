@@ -21,16 +21,17 @@ class TaskList extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: context.appColors.supportOverlay),
         ),
-        sliver: SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          sliver: SliverList.builder(
-            itemCount: tasks.length + 1,
-            itemBuilder: (_, index) {
-              return index != tasks.length
-                  ? TaskListTile(tasks[index])
-                  : const _CreateTaskButton();
-            },
-          ),
+        sliver: SliverList.builder(
+          itemCount: tasks.length + 1,
+          itemBuilder: (_, index) {
+            return index != tasks.length
+                ? TaskListTile(
+                    tasks[index],
+                    isFirst: index == 0,
+                    isLast: index == tasks.length - 1,
+                  )
+                : const _CreateTaskButton();
+          },
         ),
       ),
     );
@@ -50,6 +51,7 @@ class _CreateTaskButton extends StatelessWidget {
           ),
         ),
       ),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: TextButton(
         onPressed: () => context.goNamed(AppRoute.task.name),
         style: TextButton.styleFrom(
