@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 
+part 'sync_event.dart';
+part 'sync_state.dart';
+
 class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final ApiRepository apiRepository;
 
@@ -82,55 +85,4 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   }
 
   final _logger = GetIt.I<Logger>();
-}
-
-// STATE
-sealed class SyncState {}
-
-final class SyncInitial extends SyncState {}
-
-final class SyncInProgress extends SyncState {}
-
-final class SyncSuccess extends SyncState {}
-
-final class SyncFailure extends SyncState {}
-
-final class GetTasksInProgress extends SyncState {}
-
-final class GetTasksSuccess extends SyncState {
-  final List<Task> tasks;
-
-  GetTasksSuccess(this.tasks);
-}
-
-final class GetTasksFailure extends SyncState {}
-
-// EVENT
-sealed class SyncEvent {}
-
-final class SyncGetTasksRequested extends SyncEvent {}
-
-final class SyncUpdateTasksRequested extends SyncEvent {
-  final List<Task> tasks;
-  final int revision;
-
-  SyncUpdateTasksRequested(this.tasks, this.revision);
-}
-
-final class SyncAddTaskRequested extends SyncEvent {
-  final Task task;
-
-  SyncAddTaskRequested(this.task);
-}
-
-final class SyncUpdateTaskRequested extends SyncEvent {
-  final Task task;
-
-  SyncUpdateTaskRequested(this.task);
-}
-
-final class SyncRemoveTaskRequested extends SyncEvent {
-  final String id;
-
-  SyncRemoveTaskRequested(this.id);
 }
