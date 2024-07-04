@@ -55,6 +55,6 @@ Future<void> initDependencies() async {
     networkStatus: networkStatus,
   ));
   // BlocDispatcher listens for NetworkStatus notifications,
-  // so the listener must be ready before notification starts
+  // so the listener must be ready before notifications start
   await networkStatus.init();
 }
