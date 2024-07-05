@@ -4,6 +4,7 @@ import 'package:app/constants.dart';
 import 'package:app/data/repositories/api_repository.dart';
 import 'package:app/data/services/network_status.dart';
 import 'package:app/data/sources/api_client.dart';
+import 'package:app/data/sources/interceptors/error_interceptor.dart';
 import 'package:app/data/sources/local_storage.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
@@ -28,6 +29,7 @@ Future<void> initDependencies() async {
     requestHeader: true,
     requestBody: true,
   ));
+  dio.interceptors.add(errorInterceptor);
 
   final apiClient = ApiClient(dio);
 

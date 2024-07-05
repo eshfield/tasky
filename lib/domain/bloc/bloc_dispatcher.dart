@@ -32,14 +32,7 @@ class BlocDispatcher {
     // sync data when backed to online
     networkStatus.addListener(() {
       if (networkStatus.isOnline && _needToSync) {
-        final storedTasks = localStorage.loadTasks();
-        if (storedTasks == null) {
-          _logger.w('storedTasks is null');
-          return;
-        }
-        final storedRevision = localStorage.loadRevision() ?? 0;
-        syncBloc.add(SyncUpdateTasksRequested(storedTasks, storedRevision));
-        _setNeedToSync(false);
+        syncTasks();
       }
     });
     init();
@@ -48,11 +41,6 @@ class BlocDispatcher {
   late bool _needToSync;
 
   final _logger = GetIt.I<Logger>();
-
-  void _setNeedToSync(bool value) {
-    _needToSync = value;
-    localStorage.saveNeedToSync(value);
-  }
 
   void init() {
     final storedTasks = localStorage.loadTasks();
@@ -69,6 +57,21 @@ class BlocDispatcher {
       }
     });
     syncBloc.add(SyncGetTasksRequested());
+  }
+
+  void syncTasks() {
+    final storedTasks = localStorage.loadTasks();
+    if (storedTasks == null) {
+      _logger.w('storedTasks is null');
+      return;
+    }
+    syncBloc.add(SyncUpdateTasksRequested(storedTasks));
+    _setNeedToSync(false);
+  }
+
+  void _setNeedToSync(bool value) {
+    _needToSync = value;
+    localStorage.saveNeedToSync(value);
   }
 
   void addTask(Task task) {

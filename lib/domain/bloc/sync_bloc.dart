@@ -1,4 +1,5 @@
 import 'package:app/data/repositories/api_repository.dart';
+import 'package:app/data/sources/interceptors/error_interceptor.dart';
 import 'package:app/domain/models/task.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,9 +31,12 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (event, emit) async {
         emit(SyncInProgress());
         try {
-          apiRepository.setRevision(event.revision);
           await apiRepository.updateTasks(event.tasks);
           emit(SyncSuccess());
+        } on UnsynchronizedDataException catch (error) {
+          _logger.w(error);
+          await apiRepository.getRevision();
+          add(SyncUpdateTasksRequested(event.tasks));
         } catch (error, stackTrace) {
           _logger.w(error, stackTrace: stackTrace);
           emit(SyncFailure());

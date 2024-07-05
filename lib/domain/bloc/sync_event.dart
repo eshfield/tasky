@@ -6,9 +6,8 @@ final class SyncGetTasksRequested extends SyncEvent {}
 
 final class SyncUpdateTasksRequested extends SyncEvent {
   final List<Task> tasks;
-  final int revision;
 
-  SyncUpdateTasksRequested(this.tasks, this.revision);
+  SyncUpdateTasksRequested(this.tasks);
 }
 
 final class SyncAddTaskRequested extends SyncEvent {

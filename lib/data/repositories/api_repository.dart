@@ -19,6 +19,11 @@ class ApiRepository {
     localStorage.saveRevision(value);
   }
 
+  Future<void> getRevision() async {
+    final responseTasksDto = await apiClient.getTasks();
+    setRevision(responseTasksDto.revision);
+  }
+
   Future<List<Task>> getTasks() async {
     final responseTasksDto = await apiClient.getTasks();
     setRevision(responseTasksDto.revision);
