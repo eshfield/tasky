@@ -38,8 +38,8 @@ class Task {
   Task({
     required this.id,
     required this.text,
-    required this.importance,
-    required this.deadline,
+    this.importance = Importance.basic,
+    this.deadline,
     this.isDone = false,
     required this.createdAt,
     required this.changedAt,

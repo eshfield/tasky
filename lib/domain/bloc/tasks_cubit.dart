@@ -1,8 +1,9 @@
 import 'package:app/domain/models/task.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TasksCubit extends Cubit<TasksState> {
-  TasksCubit() : super(TasksState([]));
+  TasksCubit() : super(const TasksState([]));
 
   void setTasks(List<Task> tasks) {
     tasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -32,12 +33,12 @@ class TasksCubit extends Cubit<TasksState> {
   }
 }
 
-class TasksState {
+class TasksState extends Equatable {
   final List<Task> tasks;
   final bool showDoneTasks;
   final bool isInitialized;
 
-  TasksState(
+  const TasksState(
     this.tasks, {
     this.showDoneTasks = false,
     this.isInitialized = false,
@@ -60,4 +61,7 @@ class TasksState {
       isInitialized: isInitialized ?? this.isInitialized,
     );
   }
+
+  @override
+  List<Object?> get props => [tasks, showDoneTasks, isInitialized];
 }

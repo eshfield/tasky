@@ -9,7 +9,9 @@ part of 'task.dart';
 Task _$TaskFromJson(Map<String, dynamic> json) => Task(
       id: json['id'] as String,
       text: json['text'] as String,
-      importance: $enumDecode(_$ImportanceEnumMap, json['importance']),
+      importance:
+          $enumDecodeNullable(_$ImportanceEnumMap, json['importance']) ??
+              Importance.basic,
       deadline: _$JsonConverterFromJson<int, DateTime>(
           json['deadline'], const UnixTimestampJsonConverter().fromJson),
       isDone: json['done'] as bool? ?? false,
