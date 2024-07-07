@@ -1,10 +1,10 @@
-import 'package:app/data/services/network_status.dart';
+import 'package:app/core/services/network_status.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/home_screen/widgets/tasks_visibility_button.dart';
-import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
+import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -25,7 +25,7 @@ class Header extends StatelessWidget {
         children: [
           Row(
             children: [
-              _Title(),
+              Expanded(child: _Title()),
               SizedBox(width: 16),
               _SyncIcon(),
             ],
@@ -33,7 +33,7 @@ class Header extends StatelessWidget {
           SizedBox(height: 4),
           Row(
             children: [
-              _DoneTasksCounter(),
+              Expanded(child: _DoneTasksCounter()),
               SizedBox(width: 16),
               TasksVisibilityButton(),
             ],
@@ -49,12 +49,10 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Text(
-        context.l10n.homeTitle,
-        style: context.appTextStyles.titleLarge.copyWith(
-          color: context.appColors.labelPrimary,
-        ),
+    return Text(
+      context.l10n.homeTitle,
+      style: context.appTextStyles.titleLarge.copyWith(
+        color: context.appColors.labelPrimary,
       ),
     );
   }
@@ -173,19 +171,17 @@ class _DoneTasksCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: BlocBuilder<TasksCubit, TasksState>(
-        bloc: GetIt.I<TasksCubit>(),
-        builder: (context, state) {
-          return Text(
-            context.l10n.tasksDone(state.doneTaskCount),
-            style: context.appTextStyles.body.copyWith(
-              color: context.appColors.labelTertiary,
-            ),
-            overflow: TextOverflow.ellipsis,
-          );
-        },
-      ),
+    return BlocBuilder<TasksCubit, TasksState>(
+      bloc: GetIt.I<TasksCubit>(),
+      builder: (context, state) {
+        return Text(
+          context.l10n.tasksDone(state.doneTaskCount),
+          style: context.appTextStyles.body.copyWith(
+            color: context.appColors.labelTertiary,
+          ),
+          overflow: TextOverflow.ellipsis,
+        );
+      },
     );
   }
 }

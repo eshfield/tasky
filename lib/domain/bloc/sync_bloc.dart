@@ -1,6 +1,6 @@
-import 'package:app/data/repositories/api_repository.dart';
-import 'package:app/data/sources/interceptors/error_interceptor.dart';
-import 'package:app/domain/models/task.dart';
+import 'package:app/data/repositories/tasks_repository.dart';
+import 'package:app/core/interceptors/error_interceptor.dart';
+import 'package:app/domain/entities/task.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -10,14 +10,14 @@ part 'sync_event.dart';
 part 'sync_state.dart';
 
 class SyncBloc extends Bloc<SyncEvent, SyncState> {
-  final ApiRepository apiRepository;
+  final TasksRepository tasksRepository;
 
-  SyncBloc(this.apiRepository) : super(SyncInitial()) {
+  SyncBloc(this.tasksRepository) : super(SyncInitial()) {
     on<SyncGetTasksRequested>(
       (event, emit) async {
         emit(GetTasksInProgress());
         try {
-          final tasks = await apiRepository.getTasks();
+          final tasks = await tasksRepository.getTasks();
           emit(GetTasksSuccess(tasks));
         } catch (error, stackTrace) {
           _logger.w(error, stackTrace: stackTrace);
@@ -31,12 +31,12 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (event, emit) async {
         emit(SyncInProgress());
         try {
-          await apiRepository.updateTasks(event.tasks);
+          await tasksRepository.updateTasks();
           emit(SyncSuccess());
         } on UnsynchronizedDataException catch (error) {
           _logger.w(error);
-          await apiRepository.getRevision();
-          add(SyncUpdateTasksRequested(event.tasks));
+          await tasksRepository.getRevision();
+          add(SyncUpdateTasksRequested());
         } catch (error, stackTrace) {
           _logger.w(error, stackTrace: stackTrace);
           emit(SyncFailure());
@@ -49,7 +49,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (event, emit) async {
         emit(SyncInProgress());
         try {
-          await apiRepository.addTask(event.task);
+          await tasksRepository.addTask(event.task);
           emit(SyncSuccess());
         } catch (error, stackTrace) {
           _logger.w(error, stackTrace: stackTrace);
@@ -63,7 +63,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (event, emit) async {
         emit(SyncInProgress());
         try {
-          await apiRepository.updateTask(event.task);
+          await tasksRepository.updateTask(event.task);
           emit(SyncSuccess());
         } catch (error, stackTrace) {
           _logger.w(error, stackTrace: stackTrace);
@@ -77,7 +77,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (event, emit) async {
         emit(SyncInProgress());
         try {
-          await apiRepository.removeTask(event.id);
+          await tasksRepository.removeTask(event.id);
           emit(SyncSuccess());
         } catch (error, stackTrace) {
           _logger.w(error, stackTrace: stackTrace);

@@ -1,18 +1,18 @@
-import 'package:app/constants.dart';
-import 'package:app/data/services/network_status.dart';
+import 'package:app/core/constants.dart';
+import 'package:app/core/services/network_status.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/home_screen/widgets/tasks_visibility_button.dart';
-import 'package:app/presentation/home_screen/widgets/header.dart';
-import 'package:app/presentation/home_screen/widgets/task_list.dart';
+import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
+import 'package:app/presentation/screens/home_screen/widgets/header.dart';
+import 'package:app/presentation/screens/home_screen/widgets/task_list.dart';
 import 'package:app/presentation/widgets/app_error.dart';
 import 'package:app/presentation/widgets/app_loader.dart';
 import 'package:app/presentation/widgets/app_snack_bar.dart';
 import 'package:app/presentation/widgets/app_top_bar.dart';
-import 'package:app/presentation/theme/app_theme_extensions.dart';
-import 'package:app/router.dart';
+import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -32,12 +32,14 @@ class HomeScreenState extends State<HomeScreen> {
   final scrollController = ScrollController();
   var showAppBar = false;
   final networkStatus = GetIt.I<NetworkStatus>();
+  final blocDispatcher = GetIt.I<BlocDispatcher>();
 
   @override
   void initState() {
     super.initState();
     scrollController.addListener(_handleScroll);
     networkStatus.addListener(_handleNetworkNotifications);
+    blocDispatcher.getInitialTasks();
   }
 
   void _handleScroll() {
@@ -171,7 +173,7 @@ class _InitialLoadingContent extends StatelessWidget {
           GetTasksFailure() => SliverFillRemaining(
               hasScrollBody: false,
               child: AppError(
-                onPressed: GetIt.I<BlocDispatcher>().init,
+                onPressed: GetIt.I<BlocDispatcher>().getInitialTasks,
               ),
             ),
           _ => const SliverToBoxAdapter(),

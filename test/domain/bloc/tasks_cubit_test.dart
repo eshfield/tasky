@@ -1,5 +1,5 @@
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/domain/models/task.dart';
+import 'package:app/domain/entities/task.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 

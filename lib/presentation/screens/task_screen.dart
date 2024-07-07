@@ -1,13 +1,14 @@
+import 'package:app/core/services/device_info_service.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
-import 'package:app/domain/models/task.dart';
-import 'package:app/l10n/l10n_extension.dart';
+import 'package:app/domain/entities/task.dart';
+import 'package:app/core/extensions/l10n_extension.dart';
 import 'package:app/presentation/widgets/app_top_bar.dart';
-import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:app/presentation/widgets/app_date_picker.dart';
 import 'package:app/presentation/widgets/app_dropdown_menu.dart';
 import 'package:app/presentation/widgets/app_switch.dart';
 import 'package:app/presentation/widgets/app_text_field.dart';
-import 'package:app/router.dart';
+import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -82,7 +83,7 @@ class TaskScreenState extends State<TaskScreen> {
           child: Column(
             children: [
               _TopBar(),
-              _Content(),
+              Expanded(child: _Content()),
             ],
           ),
         ),
@@ -353,7 +354,7 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deviceId = GetIt.I<String>();
+    final deviceInfoService = GetIt.I<DeviceInfoService>();
     final blocDispatcher = GetIt.I<BlocDispatcher>();
     return FilledButton(
       style: FilledButton.styleFrom(
@@ -372,7 +373,7 @@ class _SaveButton extends StatelessWidget {
             importance: importance,
             deadline: () => TaskScreen.of(context).deadline,
             changedAt: now,
-            lastUpdatedBy: deviceId,
+            lastUpdatedBy: deviceInfoService.deviceId,
           );
           blocDispatcher.updateTask(editedTask);
         } else {
@@ -383,7 +384,7 @@ class _SaveButton extends StatelessWidget {
             deadline: TaskScreen.of(context).deadline,
             createdAt: now,
             changedAt: now,
-            lastUpdatedBy: deviceId,
+            lastUpdatedBy: deviceInfoService.deviceId,
           );
           blocDispatcher.addTask(taskToAdd);
         }

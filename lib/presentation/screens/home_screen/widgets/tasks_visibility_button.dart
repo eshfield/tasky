@@ -1,7 +1,7 @@
-import 'package:app/constants.dart';
+import 'package:app/core/constants.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/presentation/home_screen/home_screen.dart';
-import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:app/presentation/screens/home_screen/home_screen.dart';
+import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';

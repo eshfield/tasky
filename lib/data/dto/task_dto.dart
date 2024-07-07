@@ -1,4 +1,4 @@
-import 'package:app/domain/models/task.dart';
+import 'package:app/domain/entities/task.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'task_dto.g.dart';

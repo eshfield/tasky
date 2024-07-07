@@ -1,31 +1,32 @@
 import 'dart:async';
 
-import 'package:app/data/services/network_status.dart';
-import 'package:app/data/sources/local_storage.dart';
+import 'package:app/core/services/network_status.dart';
+import 'package:app/core/services/sync_storage.dart';
+import 'package:app/data/repositories/tasks_repository.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/domain/models/task.dart';
-import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
+import 'package:app/domain/entities/task.dart';
 
 class BlocDispatcher {
+  final TasksRepository tasksRepository;
   final TasksCubit tasksCubit;
   final SyncBloc syncBloc;
-  final LocalStorage localStorage;
   final NetworkStatus networkStatus;
+  final SyncStorage syncStorage;
 
   BlocDispatcher({
+    required this.tasksRepository,
     required this.tasksCubit,
     required this.syncBloc,
-    required this.localStorage,
     required this.networkStatus,
+    required this.syncStorage,
   }) {
-    _needToSync = localStorage.loadNeedToSync() ?? false;
+    _needToSync = syncStorage.loadNeedToSync() ?? false;
 
-    // save tasks to local storage
+    // autosave tasks to local storage
     tasksCubit.stream.listen((state) {
       if (state.isInitialized) {
-        localStorage.saveTasks(state.tasks);
+        tasksRepository.saveTasksLocally(state.tasks);
       }
     });
 
@@ -35,20 +36,12 @@ class BlocDispatcher {
         syncTasks();
       }
     });
-    init();
   }
 
   late bool _needToSync;
 
-  final _logger = GetIt.I<Logger>();
-
-  void init() {
-    final storedTasks = localStorage.loadTasks();
-    if (storedTasks != null) {
-      tasksCubit.setTasks(storedTasks);
-      return;
-    }
-    // no local saved tasks → rolling up backup from server
+  // the method is separated in order to run it from the error screen widget
+  void getInitialTasks() {
     late final StreamSubscription<SyncState> subscription;
     subscription = syncBloc.stream.listen((state) {
       if (state is GetTasksSuccess) {
@@ -60,18 +53,13 @@ class BlocDispatcher {
   }
 
   void syncTasks() {
-    final storedTasks = localStorage.loadTasks();
-    if (storedTasks == null) {
-      _logger.w('storedTasks is null');
-      return;
-    }
-    syncBloc.add(SyncUpdateTasksRequested(storedTasks));
+    syncBloc.add(SyncUpdateTasksRequested());
     _setNeedToSync(false);
   }
 
   void _setNeedToSync(bool value) {
     _needToSync = value;
-    localStorage.saveNeedToSync(value);
+    syncStorage.saveNeedToSync(value);
   }
 
   void addTask(Task task) {

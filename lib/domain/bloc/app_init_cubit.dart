@@ -1,4 +1,4 @@
-import 'package:app/service_locator.dart';
+import 'package:app/core/service_locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 

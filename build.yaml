@@ -4,7 +4,7 @@ targets:
       json_serializable:json_serializable:
         generate_for:
           - lib/data/dto/**
-          - lib/domain/models/**
+          - lib/domain/entities/**
       retrofit_generator:
         generate_for:
-          - lib/data/sources/api_client.dart
+          - lib/data/sources/remote/tasks_api.dart

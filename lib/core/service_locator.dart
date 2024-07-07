@@ -1,15 +1,16 @@
 import 'dart:io';
 
-import 'package:app/constants.dart';
-import 'package:app/data/repositories/api_repository.dart';
-import 'package:app/data/services/network_status.dart';
-import 'package:app/data/sources/api_client.dart';
-import 'package:app/data/sources/interceptors/error_interceptor.dart';
-import 'package:app/data/sources/local_storage.dart';
+import 'package:app/core/constants.dart';
+import 'package:app/core/services/sync_storage.dart';
+import 'package:app/data/repositories/tasks_repository.dart';
+import 'package:app/core/services/network_status.dart';
+import 'package:app/data/sources/remote/tasks_api.dart';
+import 'package:app/core/interceptors/error_interceptor.dart';
+import 'package:app/data/sources/local/tasks_storage.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/utils/device_id.dart';
+import 'package:app/core/services/device_info_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -31,30 +32,38 @@ Future<void> initDependencies() async {
   ));
   dio.interceptors.add(errorInterceptor);
 
-  final apiClient = ApiClient(dio);
-
-  final prefs = await SharedPreferences.getInstance();
-
-  final localStorage = LocalStorage(prefs);
-  final apiRepository = ApiRepository(apiClient, localStorage);
-
   final networkStatus = NetworkStatus();
   sl.registerSingleton(networkStatus);
 
-  final deviceId = await getDeviceId();
-  sl.registerSingleton(deviceId);
+  final tasksApi = TasksApi(dio);
+
+  final prefs = await SharedPreferences.getInstance();
+
+  final tasksStorage = TasksStorage(prefs);
+  final syncStorage = SyncStorage(prefs);
+
+  final tasksRepository = TasksRepository(
+    tasksApi,
+    tasksStorage,
+    networkStatus,
+  );
+
+  final deviceInfoService = DeviceInfoService();
+  await deviceInfoService.init();
+  sl.registerSingleton(deviceInfoService);
 
   final tasksCubit = TasksCubit();
   sl.registerSingleton(tasksCubit);
 
-  final syncBloc = SyncBloc(apiRepository);
+  final syncBloc = SyncBloc(tasksRepository);
   sl.registerSingleton(syncBloc);
 
   sl.registerSingleton(BlocDispatcher(
+    tasksRepository: tasksRepository,
     tasksCubit: tasksCubit,
     syncBloc: syncBloc,
-    localStorage: localStorage,
     networkStatus: networkStatus,
+    syncStorage: syncStorage,
   ));
   // BlocDispatcher listens for NetworkStatus notifications,
   // so the listener must be ready before notifications start

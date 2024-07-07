@@ -1,18 +1,17 @@
 import 'dart:convert';
 
-import 'package:app/domain/models/task.dart';
+import 'package:app/domain/entities/task.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const tasksKey = 'tasks';
 const revisionKey = 'revision';
-const needToSyncKey = 'needToSync';
 
-class LocalStorage {
+class TasksStorage {
   final SharedPreferences prefs;
 
-  LocalStorage(this.prefs);
+  TasksStorage(this.prefs);
 
   final _logger = GetIt.I<Logger>();
 
@@ -27,9 +26,9 @@ class LocalStorage {
     }
   }
 
-  Future<void> saveTasks(List<Task> tasks) async {
+  void saveTasks(List<Task> tasks) {
     final data = jsonEncode(tasks);
-    await prefs.setString(tasksKey, data);
+    prefs.setString(tasksKey, data);
   }
 
   int? loadRevision() {
@@ -41,28 +40,11 @@ class LocalStorage {
     }
   }
 
-  Future<void> saveRevision(int? revision) async {
+  void saveRevision(int? revision) {
     if (revision == null) {
-      await prefs.remove(revisionKey);
+      prefs.remove(revisionKey);
     } else {
-      await prefs.setInt(revisionKey, revision);
-    }
-  }
-
-  bool? loadNeedToSync() {
-    try {
-      return prefs.getBool(needToSyncKey);
-    } catch (error, stackTrace) {
-      _logger.e(error, stackTrace: stackTrace);
-      return null;
-    }
-  }
-
-  Future<void> saveNeedToSync(bool? needToSync) async {
-    if (needToSync == null) {
-      await prefs.remove(needToSyncKey);
-    } else {
-      await prefs.setBool(needToSyncKey, needToSync);
+      prefs.setInt(revisionKey, revision);
     }
   }
 }

@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
-part 'api_client.g.dart';
+part 'tasks_api.g.dart';
 
 const revisionHeader = 'X-Last-Known-Revision';
 
@@ -16,8 +16,8 @@ abstract class ApiUrl {
 }
 
 @RestApi(baseUrl: ApiUrl.baseUrl)
-abstract class ApiClient {
-  factory ApiClient(Dio dio, {String baseUrl}) = _ApiClient;
+abstract class TasksApi {
+  factory TasksApi(Dio dio, {String baseUrl}) = _TasksApi;
 
   @GET(ApiUrl.list)
   Future<TasksDto> getTasks();

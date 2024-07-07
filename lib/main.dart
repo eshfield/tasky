@@ -1,7 +1,7 @@
 import 'package:app/domain/bloc/app_init_cubit.dart';
-import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/theme/theme.dart';
-import 'package:app/router.dart';
+import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/theme/theme.dart';
+import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,4 +1,4 @@
-import 'package:app/presentation/theme/app_theme_extensions.dart';
+import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 
 const buttonPadding = 16.0 - (48.0 - 24.0) / 2;

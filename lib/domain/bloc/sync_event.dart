@@ -4,11 +4,7 @@ sealed class SyncEvent {}
 
 final class SyncGetTasksRequested extends SyncEvent {}
 
-final class SyncUpdateTasksRequested extends SyncEvent {
-  final List<Task> tasks;
-
-  SyncUpdateTasksRequested(this.tasks);
-}
+final class SyncUpdateTasksRequested extends SyncEvent {}
 
 final class SyncAddTaskRequested extends SyncEvent {
   final Task task;

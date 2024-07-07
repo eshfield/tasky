@@ -1,8 +1,8 @@
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
-import 'package:app/domain/models/task.dart';
-import 'package:app/l10n/l10n_extension.dart';
-import 'package:app/presentation/theme/app_theme_extensions.dart';
-import 'package:app/router.dart';
+import 'package:app/domain/entities/task.dart';
+import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';

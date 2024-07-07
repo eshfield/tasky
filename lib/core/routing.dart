@@ -1,8 +1,8 @@
 import 'package:app/domain/bloc/app_init_cubit.dart';
-import 'package:app/domain/models/task.dart';
-import 'package:app/presentation/app_init_status_screen/app_init_screen.dart';
-import 'package:app/presentation/home_screen/home_screen.dart';
-import 'package:app/presentation/task_screen/task_screen.dart';
+import 'package:app/domain/entities/task.dart';
+import 'package:app/presentation/screens/app_init_screen.dart';
+import 'package:app/presentation/screens/home_screen/home_screen.dart';
+import 'package:app/presentation/screens/task_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
