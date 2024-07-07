@@ -71,11 +71,6 @@ abstract class AppTheme {
       fontWeight: FontWeight.w500,
       height: 32 / 20,
     ),
-    button: TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      height: 24 / 14,
-    ),
     body: TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.w400,
