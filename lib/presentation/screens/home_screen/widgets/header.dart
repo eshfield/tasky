@@ -1,13 +1,11 @@
-import 'package:app/core/services/network_status.dart';
-import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
 import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class Header extends StatelessWidget {
@@ -63,12 +61,12 @@ class _SyncIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final networkStatus = GetIt.I<NetworkStatus>();
+    final networkStatus = HomeScreen.of(context).networkStatus;
     return ListenableBuilder(
       listenable: networkStatus,
       builder: (context, child) {
         return BlocBuilder<SyncBloc, SyncState>(
-          bloc: GetIt.I<SyncBloc>(),
+          bloc: HomeScreen.of(context).syncBloc,
           builder: (context, state) {
             IconData? icon;
             var iconColor = context.appColors.labelSecondary;
@@ -125,7 +123,7 @@ class _SyncIcon extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                GetIt.I<BlocDispatcher>().syncTasks();
+                HomeScreen.of(context).blocDispatcher.syncTasks();
                 context.pop();
               },
               child: Text(
@@ -172,7 +170,7 @@ class _DoneTasksCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TasksCubit, TasksState>(
-      bloc: GetIt.I<TasksCubit>(),
+      bloc: HomeScreen.of(context).tasksCubit,
       builder: (context, state) {
         return Text(
           context.l10n.tasksDone(state.doneTaskCount),

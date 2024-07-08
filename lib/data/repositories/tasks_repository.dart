@@ -1,6 +1,6 @@
 import 'package:app/core/services/network_status.dart';
-import 'package:app/data/dto/task_dto.dart';
-import 'package:app/data/dto/tasks_dto.dart';
+import 'package:app/data/dtos/task_dto.dart';
+import 'package:app/data/dtos/tasks_dto.dart';
 import 'package:app/data/sources/local/tasks_storage.dart';
 import 'package:app/data/sources/remote/tasks_api.dart';
 import 'package:app/domain/entities/task.dart';

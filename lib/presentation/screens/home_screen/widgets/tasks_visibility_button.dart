@@ -4,14 +4,13 @@ import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class TasksVisibilityButton extends StatelessWidget {
   const TasksVisibilityButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final tasksCubit = GetIt.I<TasksCubit>();
+    final tasksCubit = HomeScreen.of(context).tasksCubit;
     return IconButton(
       onPressed: () {
         tasksCubit.toggleShowDoneTasks();
@@ -22,7 +21,7 @@ class TasksVisibilityButton extends StatelessWidget {
             );
       },
       icon: BlocBuilder<TasksCubit, TasksState>(
-        bloc: GetIt.I<TasksCubit>(),
+        bloc: tasksCubit,
         builder: (context, state) {
           return Icon(
             state.showDoneTasks ? Icons.visibility_off : Icons.visibility,

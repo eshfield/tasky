@@ -29,10 +29,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  final blocDispatcher = GetIt.I<BlocDispatcher>();
+  final networkStatus = GetIt.I<NetworkStatus>();
+  final syncBloc = GetIt.I<SyncBloc>();
+  final tasksCubit = GetIt.I<TasksCubit>();
+
   final scrollController = ScrollController();
   var showAppBar = false;
-  final networkStatus = GetIt.I<NetworkStatus>();
-  final blocDispatcher = GetIt.I<BlocDispatcher>();
 
   @override
   void initState() {
@@ -127,7 +130,7 @@ class _Content extends StatelessWidget {
           child: Header(),
         ),
         BlocListener<SyncBloc, SyncState>(
-          bloc: GetIt.I<SyncBloc>(),
+          bloc: HomeScreen.of(context).syncBloc,
           listener: (context, state) {
             showAppSnackBar(
               context,
@@ -137,7 +140,7 @@ class _Content extends StatelessWidget {
           },
           listenWhen: (_, state) => state is SyncFailure,
           child: BlocBuilder<TasksCubit, TasksState>(
-            bloc: GetIt.I<TasksCubit>(),
+            bloc: HomeScreen.of(context).tasksCubit,
             builder: (context, state) {
               if (state.isInitialized) {
                 final tasksToDisplay = state.tasksToDisplay;
@@ -163,7 +166,7 @@ class _InitialLoadingContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SyncBloc, SyncState>(
-      bloc: GetIt.I<SyncBloc>(),
+      bloc: HomeScreen.of(context).syncBloc,
       builder: (context, state) {
         return switch (state) {
           GetTasksInProgress() => const SliverFillRemaining(
@@ -173,7 +176,8 @@ class _InitialLoadingContent extends StatelessWidget {
           GetTasksFailure() => SliverFillRemaining(
               hasScrollBody: false,
               child: AppError(
-                onPressed: GetIt.I<BlocDispatcher>().getInitialTasks,
+                onPressed:
+                    HomeScreen.of(context).blocDispatcher.getInitialTasks,
               ),
             ),
           _ => const SliverToBoxAdapter(),
@@ -221,7 +225,7 @@ class _Empty extends StatelessWidget {
       padding: const EdgeInsets.all(32),
       child: Center(
         child: BlocBuilder<TasksCubit, TasksState>(
-          bloc: GetIt.I<TasksCubit>(),
+          bloc: HomeScreen.of(context).tasksCubit,
           builder: (context, state) {
             return Text(
               state.showDoneTasks

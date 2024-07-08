@@ -42,6 +42,8 @@ class TaskScreen extends StatefulWidget {
 }
 
 class TaskScreenState extends State<TaskScreen> {
+  final blocDispatcher = GetIt.I<BlocDispatcher>();
+  final deviceInfoService = GetIt.I<DeviceInfoService>();
   final formKey = GlobalKey<FormState>();
   final textController = TextEditingController();
   var importance = Importance.basic;
@@ -329,14 +331,13 @@ class _RemoveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final blocDispatcher = GetIt.I<BlocDispatcher>();
     final task = TaskScreen.of(context).widget.task;
     return FilledButton(
       style: FilledButton.styleFrom(
         backgroundColor: context.appColors.red,
       ),
       onPressed: () {
-        blocDispatcher.removeTask(task!.id);
+        TaskScreen.of(context).blocDispatcher.removeTask(task!.id);
         context.goNamed(AppRoute.home.name);
       },
       child: Text(
@@ -354,8 +355,6 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deviceInfoService = GetIt.I<DeviceInfoService>();
-    final blocDispatcher = GetIt.I<BlocDispatcher>();
     return FilledButton(
       style: FilledButton.styleFrom(
         backgroundColor: context.appColors.blue,
@@ -366,6 +365,7 @@ class _SaveButton extends StatelessWidget {
         final text = TaskScreen.of(context).textController.text.trim();
         final importance = TaskScreen.of(context).importance;
         final now = DateTime.now();
+        final deviceId = TaskScreen.of(context).deviceInfoService.deviceId;
         if (TaskScreen.of(context).isEditing) {
           final taskToEdit = TaskScreen.of(context).widget.task;
           final editedTask = taskToEdit!.copyWith(
@@ -373,9 +373,9 @@ class _SaveButton extends StatelessWidget {
             importance: importance,
             deadline: () => TaskScreen.of(context).deadline,
             changedAt: now,
-            lastUpdatedBy: deviceInfoService.deviceId,
+            lastUpdatedBy: deviceId,
           );
-          blocDispatcher.updateTask(editedTask);
+          TaskScreen.of(context).blocDispatcher.updateTask(editedTask);
         } else {
           final taskToAdd = Task(
             id: const Uuid().v4(),
@@ -384,9 +384,9 @@ class _SaveButton extends StatelessWidget {
             deadline: TaskScreen.of(context).deadline,
             createdAt: now,
             changedAt: now,
-            lastUpdatedBy: deviceInfoService.deviceId,
+            lastUpdatedBy: deviceId,
           );
-          blocDispatcher.addTask(taskToAdd);
+          TaskScreen.of(context).blocDispatcher.addTask(taskToAdd);
         }
         context.goNamed(AppRoute.home.name);
       },

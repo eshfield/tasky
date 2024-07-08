@@ -1,5 +1,5 @@
-import 'package:app/data/dto/task_dto.dart';
-import 'package:app/data/dto/tasks_dto.dart';
+import 'package:app/data/dtos/task_dto.dart';
+import 'package:app/data/dtos/tasks_dto.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';

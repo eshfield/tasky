@@ -6,52 +6,45 @@ import 'package:flutter_test/flutter_test.dart';
 const deviceId = 'device1';
 
 void main() {
-  late final List<Task> startTasks;
-  late final TasksState startState;
-  late final Task taskToAdd;
-  late final Task taskToUpdate;
+  final now1 = DateTime.now();
+  final now2 = DateTime.now().subtract(const Duration(minutes: 1));
+  final startTasks = [
+    Task(
+      id: 'id1',
+      text: 'One',
+      createdAt: now1,
+      changedAt: now1,
+      lastUpdatedBy: deviceId,
+    ),
+    Task(
+      id: 'id2',
+      text: 'Two',
+      createdAt: now2,
+      changedAt: now2,
+      lastUpdatedBy: deviceId,
+    ),
+  ];
+  final startState = TasksState(startTasks, isInitialized: true);
+  final taskToAdd = Task(
+    id: 'id3',
+    text: 'Three',
+    createdAt: now1,
+    changedAt: now1,
+    lastUpdatedBy: deviceId,
+  );
+  final now3 = DateTime.now();
+  final taskToUpdate = startTasks.first.copyWith(
+    text: 'Updated text',
+    importance: Importance.important,
+    deadline: () => now3,
+    isDone: true,
+    changedAt: now3,
+    lastUpdatedBy: deviceId,
+  );
+
   group(
     'TasksCubit',
     () {
-      setUpAll(
-        () {
-          final now1 = DateTime.now();
-          final now2 = DateTime.now().subtract(const Duration(minutes: 1));
-          startTasks = [
-            Task(
-              id: 'id1',
-              text: 'One',
-              createdAt: now1,
-              changedAt: now1,
-              lastUpdatedBy: deviceId,
-            ),
-            Task(
-              id: 'id2',
-              text: 'Two',
-              createdAt: now2,
-              changedAt: now2,
-              lastUpdatedBy: deviceId,
-            ),
-          ];
-          startState = TasksState(startTasks, isInitialized: true);
-          taskToAdd = Task(
-            id: 'id3',
-            text: 'Three',
-            createdAt: now1,
-            changedAt: now1,
-            lastUpdatedBy: deviceId,
-          );
-          final now3 = DateTime.now();
-          taskToUpdate = startTasks.first.copyWith(
-            text: 'Updated text',
-            importance: Importance.important,
-            deadline: () => now3,
-            isDone: true,
-            changedAt: now3,
-            lastUpdatedBy: deviceId,
-          );
-        },
-      );
       blocTest(
         'setTasks',
         build: () => TasksCubit(),

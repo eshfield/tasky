@@ -1,10 +1,9 @@
-import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:app/core/extensions/l10n_extension.dart';
 import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:app/core/routing.dart';
+import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class TaskListTile extends StatelessWidget {
@@ -21,7 +20,7 @@ class TaskListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final blocDispatcher = GetIt.I<BlocDispatcher>();
+    final blocDispatcher = HomeScreen.of(context).blocDispatcher;
     return TaskListTileInheritedWidget(
       task: task,
       isFirst: isFirst,
@@ -148,7 +147,6 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
     final isImportant = task.importance == Importance.important;
-    final blocDispatcher = GetIt.I<BlocDispatcher>();
     return Checkbox(
       fillColor: WidgetStateProperty.resolveWith(
         (states) {
@@ -168,7 +166,8 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
         width: 2,
       ),
       value: task.isDone,
-      onChanged: (_) => blocDispatcher.toggleTaskAsDone(task),
+      onChanged: (_) =>
+          HomeScreen.of(context).blocDispatcher.toggleTaskAsDone(task),
     );
   }
 }
