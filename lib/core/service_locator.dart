@@ -13,14 +13,11 @@ import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> initDependencies() async {
   final sl = GetIt.instance;
-
-  sl.registerSingleton(Logger());
 
   final dio = Dio();
   const token = String.fromEnvironment(tokenArgName);

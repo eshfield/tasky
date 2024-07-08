@@ -1,4 +1,3 @@
-import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,13 +8,11 @@ class SyncStorage {
 
   SyncStorage(this.prefs);
 
-  final _logger = GetIt.I<Logger>();
-
   bool? loadNeedToSync() {
     try {
       return prefs.getBool(needToSyncKey);
     } catch (error, stackTrace) {
-      _logger.e(error, stackTrace: stackTrace);
+      Logger().e(error, stackTrace: stackTrace);
       return null;
     }
   }

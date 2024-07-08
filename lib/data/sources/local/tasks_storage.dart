@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:app/domain/entities/task.dart';
-import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,15 +12,13 @@ class TasksStorage {
 
   TasksStorage(this.prefs);
 
-  final _logger = GetIt.I<Logger>();
-
   List<Task>? loadTasks() {
     try {
       final data = prefs.getString(tasksKey);
       if (data == null) return null;
       return jsonDecode(data).map<Task>((json) => Task.fromJson(json)).toList();
     } catch (error, stackTrace) {
-      _logger.e(error, stackTrace: stackTrace);
+      Logger().e(error, stackTrace: stackTrace);
       return null;
     }
   }
@@ -35,7 +32,7 @@ class TasksStorage {
     try {
       return prefs.getInt(revisionKey);
     } catch (error, stackTrace) {
-      _logger.e(error, stackTrace: stackTrace);
+      Logger().e(error, stackTrace: stackTrace);
       return null;
     }
   }

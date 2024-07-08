@@ -6,54 +6,68 @@ import 'package:flutter_test/flutter_test.dart';
 const deviceId = 'device1';
 
 void main() {
-  final now1 = DateTime.now();
-  final now2 = DateTime.now().subtract(const Duration(minutes: 1));
-  final startTasks = [
-    Task(
-      id: 'id1',
-      text: 'One',
-      createdAt: now1,
-      changedAt: now1,
-      lastUpdatedBy: deviceId,
-    ),
-    Task(
-      id: 'id2',
-      text: 'Two',
-      createdAt: now2,
-      changedAt: now2,
-      lastUpdatedBy: deviceId,
-    ),
-  ];
-  final startState = TasksState(startTasks, isInitialized: true);
-  final taskToAdd = Task(
-    id: 'id3',
-    text: 'Three',
-    createdAt: now1,
-    changedAt: now1,
-    lastUpdatedBy: deviceId,
+  late List<Task> startTasks;
+  late TasksState startState;
+  late Task taskToAdd;
+  late Task taskToUpdate;
+
+  setUp(
+    () {
+      final now1 = DateTime.now();
+      final now2 = DateTime.now().subtract(const Duration(minutes: 1));
+      startTasks = [
+        Task(
+          id: 'id1',
+          text: 'One',
+          createdAt: now1,
+          changedAt: now1,
+          lastUpdatedBy: deviceId,
+        ),
+        Task(
+          id: 'id2',
+          text: 'Two',
+          createdAt: now2,
+          changedAt: now2,
+          lastUpdatedBy: deviceId,
+        ),
+      ];
+
+      startState = TasksState(startTasks, isInitialized: true);
+
+      taskToAdd = Task(
+        id: 'id3',
+        text: 'Three',
+        createdAt: now1,
+        changedAt: now1,
+        lastUpdatedBy: deviceId,
+      );
+
+      final now3 = DateTime.now();
+      taskToUpdate = startTasks.first.copyWith(
+        text: 'Updated text',
+        importance: Importance.important,
+        deadline: () => now3,
+        isDone: true,
+        changedAt: now3,
+        lastUpdatedBy: deviceId,
+      );
+    },
   );
-  final now3 = DateTime.now();
-  final taskToUpdate = startTasks.first.copyWith(
-    text: 'Updated text',
-    importance: Importance.important,
-    deadline: () => now3,
-    isDone: true,
-    changedAt: now3,
-    lastUpdatedBy: deviceId,
-  );
+
+  TasksCubit build() => TasksCubit();
 
   group(
     'TasksCubit',
     () {
       blocTest(
         'setTasks',
-        build: () => TasksCubit(),
+        build: build,
         act: (cubit) => cubit.setTasks(startTasks),
         expect: () => [startState],
       );
       blocTest(
         'addTask',
-        build: () => TasksCubit(),
+        build: build,
         seed: () => startState,
         act: (cubit) => cubit.addTask(taskToAdd),
         expect: () => [
@@ -65,7 +79,7 @@ void main() {
       );
       blocTest(
         'updateTask',
-        build: () => TasksCubit(),
+        build: build,
         seed: () => startState,
         act: (cubit) => cubit.updateTask(taskToUpdate),
         expect: () => [
@@ -75,7 +89,7 @@ void main() {
       );
       blocTest(
         'removeTask',
-        build: () => TasksCubit(),
+        build: build,
         seed: () => startState,
         act: (cubit) => cubit.removeTask(startTasks.first.id),
         expect: () => [
@@ -90,7 +104,7 @@ void main() {
       );
       blocTest(
         'toggleShowDoneTasks',
-        build: () => TasksCubit(),
+        build: build,
         seed: () => startState,
         act: (cubit) {
           cubit.toggleShowDoneTasks();
