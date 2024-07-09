@@ -1,4 +1,5 @@
 import 'package:app/core/constants.dart';
+import 'package:app/core/di/dependency_container.dart';
 import 'package:app/core/services/network_status.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
@@ -15,7 +16,6 @@ import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,10 +29,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final blocDispatcher = GetIt.I<BlocDispatcher>();
-  final networkStatus = GetIt.I<NetworkStatus>();
-  final syncBloc = GetIt.I<SyncBloc>();
-  final tasksCubit = GetIt.I<TasksCubit>();
+  late final DependencyContainer dependencyContainer;
+  late final BlocDispatcher blocDispatcher;
+  late final NetworkStatus networkStatus;
+  late final SyncBloc syncBloc;
+  late final TasksCubit tasksCubit;
 
   final scrollController = ScrollController();
   var showAppBar = false;
@@ -40,6 +41,12 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    dependencyContainer = context.read<DependencyContainer>();
+    blocDispatcher = dependencyContainer.blocDispatcher;
+    networkStatus = dependencyContainer.networkStatus;
+    syncBloc = dependencyContainer.syncBloc;
+    tasksCubit = dependencyContainer.tasksCubit;
+
     scrollController.addListener(_handleScroll);
     networkStatus.addListener(_handleNetworkNotifications);
     blocDispatcher.getInitialTasks();

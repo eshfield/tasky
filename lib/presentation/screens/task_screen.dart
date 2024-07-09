@@ -1,3 +1,4 @@
+import 'package:app/core/di/dependency_container.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/entities/task.dart';
@@ -10,7 +11,7 @@ import 'package:app/presentation/widgets/app_switch.dart';
 import 'package:app/presentation/widgets/app_text_field.dart';
 import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
@@ -42,8 +43,10 @@ class TaskScreen extends StatefulWidget {
 }
 
 class TaskScreenState extends State<TaskScreen> {
-  final blocDispatcher = GetIt.I<BlocDispatcher>();
-  final deviceInfoService = GetIt.I<DeviceInfoService>();
+  late final DependencyContainer dependencyContainer;
+  late final BlocDispatcher blocDispatcher;
+  late final DeviceInfoService deviceInfoService;
+
   final formKey = GlobalKey<FormState>();
   final textController = TextEditingController();
   var importance = Importance.basic;
@@ -53,6 +56,10 @@ class TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
+    dependencyContainer = context.read<DependencyContainer>();
+    blocDispatcher = dependencyContainer.blocDispatcher;
+    deviceInfoService = dependencyContainer.deviceInfoService;
+
     final task = widget.task;
     isEditing = task != null;
     if (isEditing) {
