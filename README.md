@@ -42,6 +42,11 @@ adb shell 'am start -a android.intent.action.VIEW \
 --dart-define=TOKEN=%YOUR_TOKEN%
 ```
 
+## Тесты
+Приложение располагает следующими тестами:
+- unit тесты для сущностей: `TasksRepository`, `TasksCubit`, `SyncBloc`
+- integration тесты: сценарий добавления новой задачи
+
 ## Скриншоты
 ![Screenshots1](screenshots/screenshots1.png)
 ![Screenshots2](screenshots/screenshots2.png)

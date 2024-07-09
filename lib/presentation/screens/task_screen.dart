@@ -214,6 +214,7 @@ class _TextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppTextField(
+      key: const ValueKey('taskTextField'),
       autofocus: !TaskScreen.of(context).isEditing,
       controller: TaskScreen.of(context).textController,
       hintText: context.l10n.taskTextHint,
@@ -240,6 +241,7 @@ class _ImportanceMenu extends StatelessWidget {
         _Label(context.l10n.taskImportance),
         const SizedBox(height: 8),
         AppDropdownMenu(
+          key: const ValueKey('taskImportanceMenu'),
           initialSelection: importance,
           textColor: importance == Importance.important
               ? context.appColors.red
@@ -250,6 +252,7 @@ class _ImportanceMenu extends StatelessWidget {
             return DropdownMenuEntry(
               label: labelText,
               labelWidget: Text(
+                key: ValueKey(value.name),
                 labelText,
                 style: context.appTextStyles.body.copyWith(
                   color: value == Importance.important
@@ -294,6 +297,7 @@ class _DeadlinePicker extends StatelessWidget {
         ),
         const SizedBox(width: 16),
         AppSwitch(
+          key: const ValueKey('taskDeadline'),
           value: deadline != null,
           onChanged: (value) async {
             DateTime? newDeadline;
@@ -363,6 +367,7 @@ class _SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilledButton(
+      key: const ValueKey('taskSaveButton'),
       style: FilledButton.styleFrom(
         backgroundColor: context.appColors.blue,
       ),

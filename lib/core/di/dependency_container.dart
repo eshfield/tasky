@@ -16,18 +16,33 @@ import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class DependencyContainer {
+abstract class DependencyContainer {
+  BlocDispatcher get blocDispatcher;
+  DeviceInfoService get deviceInfoService;
+  NetworkStatus get networkStatus;
+  SyncBloc get syncBloc;
+  TasksCubit get tasksCubit;
+  bool get isInitializedSuccessfully;
+}
+
+class AppDependencyContainer implements DependencyContainer {
+  @override
   late final BlocDispatcher blocDispatcher;
+  @override
   late final DeviceInfoService deviceInfoService;
+  @override
   late final NetworkStatus networkStatus;
+  @override
   late final SyncBloc syncBloc;
+  @override
   late final TasksCubit tasksCubit;
+  @override
   late final bool isInitializedSuccessfully;
 
-  DependencyContainer._();
+  AppDependencyContainer._();
 
-  static Future<DependencyContainer> create() async {
-    final container = DependencyContainer._();
+  static Future<AppDependencyContainer> create() async {
+    final container = AppDependencyContainer._();
     await container._init();
     return container;
   }
