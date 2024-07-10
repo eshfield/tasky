@@ -95,41 +95,41 @@ class _SyncIcon extends StatelessWidget {
   _showSyncDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (ctx) {
         return AlertDialog(
-          backgroundColor: context.appColors.backSecondary,
+          backgroundColor: ctx.appColors.backSecondary,
           title: Text(
-            context.l10n.forceSyncTitle,
-            style: context.appTextStyles.title.copyWith(
-              color: context.appColors.labelPrimary,
+            ctx.l10n.forceSyncTitle,
+            style: ctx.appTextStyles.title.copyWith(
+              color: ctx.appColors.labelPrimary,
               height: 1.2,
             ),
           ),
           content: Text(
-            context.l10n.forceSyncText,
-            style: context.appTextStyles.body.copyWith(
-              color: context.appColors.labelPrimary,
+            ctx.l10n.forceSyncText,
+            style: ctx.appTextStyles.body.copyWith(
+              color: ctx.appColors.labelPrimary,
             ),
           ),
           actions: [
             TextButton(
-              onPressed: context.pop,
+              onPressed: ctx.pop,
               child: Text(
-                context.l10n.forceSyncCancel,
-                style: context.appTextStyles.body.copyWith(
-                  color: context.appColors.blue,
+                ctx.l10n.forceSyncCancel,
+                style: ctx.appTextStyles.body.copyWith(
+                  color: ctx.appColors.blue,
                 ),
               ),
             ),
             TextButton(
               onPressed: () {
                 HomeScreen.of(context).blocDispatcher.syncTasks();
-                context.pop();
+                ctx.pop();
               },
               child: Text(
-                context.l10n.forceSyncRun,
-                style: context.appTextStyles.body.copyWith(
-                  color: context.appColors.blue,
+                ctx.l10n.forceSyncRun,
+                style: ctx.appTextStyles.body.copyWith(
+                  color: ctx.appColors.blue,
                 ),
               ),
             ),
