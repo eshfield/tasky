@@ -3,7 +3,7 @@ targets:
     builders:
       json_serializable:json_serializable:
         generate_for:
-          - lib/data/dto/**
+          - lib/data/dtos/**
           - lib/domain/entities/**
       retrofit_generator:
         generate_for:
