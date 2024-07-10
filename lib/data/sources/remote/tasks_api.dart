@@ -1,7 +1,6 @@
 import 'package:app/data/dtos/task_dto.dart';
 import 'package:app/data/dtos/tasks_dto.dart';
 import 'package:dio/dio.dart';
-import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'tasks_api.g.dart';
