@@ -1,7 +1,7 @@
 name: app
 description: "Tasky — Todo List App"
 publish_to: "none"
-version: 1.3.0
+version: 1.2.0
 
 environment:
   sdk: ">=3.4.3 <4.0.0"
