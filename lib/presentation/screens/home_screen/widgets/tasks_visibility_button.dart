@@ -23,9 +23,13 @@ class TasksVisibilityButton extends StatelessWidget {
       icon: BlocBuilder<TasksCubit, TasksState>(
         bloc: tasksCubit,
         builder: (context, state) {
-          return Icon(
-            state.showDoneTasks ? Icons.visibility_off : Icons.visibility,
-            color: context.appColors.blue,
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: Icon(
+              key: UniqueKey(),
+              state.showDoneTasks ? Icons.visibility_off : Icons.visibility,
+              color: context.appColors.blue,
+            ),
           );
         },
       ),
