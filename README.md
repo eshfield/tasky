@@ -45,7 +45,7 @@ adb shell 'am start -a android.intent.action.VIEW \
 ## Тесты
 Приложение располагает следующими тестами:
 - unit тесты для сущностей: `TasksRepository`, `TasksCubit`, `SyncBloc`
-- integration тесты: сценарий добавления новой задачи
+- integration тесты: сценарий добавления новой задачи (подразумевается запуск теста на реальном устройстве или эмуляторе)
 
 ## Скриншоты
 ![Screenshots1](screenshots/screenshots1.png)
