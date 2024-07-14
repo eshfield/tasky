@@ -79,7 +79,7 @@ class _TasksList extends StatelessWidget {
             child: TaskListTile(
               task,
               isFirst: index == 0,
-              isLast: index == tasks.length,
+              isLast: index == tasks.length - 1,
             ),
           ),
         );
