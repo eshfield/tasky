@@ -92,7 +92,9 @@ class TaskScreenState extends State<TaskScreen> {
           child: Column(
             children: [
               _TopBar(),
-              Expanded(child: _Content()),
+              Expanded(
+                child: _Content(),
+              ),
             ],
           ),
         ),
@@ -376,29 +378,31 @@ class _SaveButton extends StatelessWidget {
         if (!formKey.currentState!.validate()) return;
         final text = TaskScreen.of(context).textController.text.trim();
         final importance = TaskScreen.of(context).importance;
+        final deadline = TaskScreen.of(context).deadline;
         final now = DateTime.now();
         final deviceId = TaskScreen.of(context).deviceInfoService.deviceId;
+        final blocDispatcher = TaskScreen.of(context).blocDispatcher;
         if (TaskScreen.of(context).isEditing) {
           final taskToEdit = TaskScreen.of(context).widget.task;
           final editedTask = taskToEdit!.copyWith(
             text: text,
             importance: importance,
-            deadline: () => TaskScreen.of(context).deadline,
+            deadline: () => deadline,
             changedAt: now,
             lastUpdatedBy: deviceId,
           );
-          TaskScreen.of(context).blocDispatcher.updateTask(editedTask);
+          blocDispatcher.updateTask(editedTask);
         } else {
           final taskToAdd = Task(
             id: const Uuid().v4(),
             text: text,
             importance: importance,
-            deadline: TaskScreen.of(context).deadline,
+            deadline: deadline,
             createdAt: now,
             changedAt: now,
             lastUpdatedBy: deviceId,
           );
-          TaskScreen.of(context).blocDispatcher.addTask(taskToAdd);
+          blocDispatcher.addTask(taskToAdd);
         }
         context.goNamed(AppRoute.home.name);
       },

@@ -26,7 +26,7 @@ class TasksVisibilityButton extends StatelessWidget {
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: Icon(
-              key: UniqueKey(),
+              key: ValueKey(state.showDoneTasks),
               state.showDoneTasks ? Icons.visibility_off : Icons.visibility,
               color: context.appColors.blue,
             ),

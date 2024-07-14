@@ -23,7 +23,9 @@ class Header extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: _Title()),
+              Expanded(
+                child: _Title(),
+              ),
               SizedBox(width: 16),
               _SyncIcon(),
             ],
@@ -31,7 +33,9 @@ class Header extends StatelessWidget {
           SizedBox(height: 4),
           Row(
             children: [
-              Expanded(child: _DoneTasksCounter()),
+              Expanded(
+                child: _DoneTasksCounter(),
+              ),
               SizedBox(width: 16),
               TasksVisibilityButton(),
             ],

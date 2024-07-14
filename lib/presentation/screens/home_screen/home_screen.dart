@@ -7,7 +7,7 @@ import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/core/extensions/l10n_extension.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
 import 'package:app/presentation/screens/home_screen/widgets/header.dart';
-import 'package:app/presentation/screens/home_screen/widgets/task_list.dart';
+import 'package:app/presentation/screens/home_screen/widgets/tasks_list.dart';
 import 'package:app/presentation/widgets/app_error.dart';
 import 'package:app/presentation/widgets/app_loader.dart';
 import 'package:app/presentation/widgets/app_snack_bar.dart';
@@ -156,7 +156,7 @@ class _Content extends StatelessWidget {
                         hasScrollBody: false,
                         child: _Empty(),
                       )
-                    : TaskList(tasksToDisplay);
+                    : TasksList(tasksToDisplay);
               }
               return const _InitialLoadingContent();
             },

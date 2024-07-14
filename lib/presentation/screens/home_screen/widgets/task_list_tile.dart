@@ -24,6 +24,7 @@ class TaskListTile extends StatelessWidget {
     return TaskListTileInheritedWidget(
       task: task,
       isFirst: isFirst,
+      isLast: isLast,
       child: ClipRRect(
         clipBehavior: Clip.hardEdge,
         child: Dismissible(
@@ -31,14 +32,14 @@ class TaskListTile extends StatelessWidget {
           background: const _Background(),
           secondaryBackground: const _SecondaryBackground(),
           confirmDismiss: (direction) async {
-            // no need to dismiss task with "mark as done" action
             if (direction == DismissDirection.startToEnd) {
               blocDispatcher.toggleTaskAsDone(task);
-              return false;
+            } else if (direction == DismissDirection.endToStart) {
+              blocDispatcher.removeTask(task.id);
             }
-            return true;
+            // we don't need built-in dismiss animation since we have own one
+            return false;
           },
-          onDismissed: (_) => blocDispatcher.removeTask(task.id),
           child: Container(
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(
@@ -50,7 +51,9 @@ class TaskListTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _MarkAsDoneCheckbox(),
-                Expanded(child: _TextLine()),
+                Expanded(
+                  child: _TextLine(),
+                ),
                 SizedBox(width: 12),
                 _EditButton(),
               ],
@@ -65,11 +68,13 @@ class TaskListTile extends StatelessWidget {
 class TaskListTileInheritedWidget extends InheritedWidget {
   final Task task;
   final bool isFirst;
+  final bool isLast;
 
   const TaskListTileInheritedWidget({
     super.key,
     required this.task,
     required this.isFirst,
+    required this.isLast,
     required super.child,
   });
 
@@ -96,7 +101,7 @@ class _Background extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.green,
         borderRadius: isFirst
-            ? const BorderRadius.only(topLeft: Radius.circular(12))
+            ? const BorderRadius.vertical(top: Radius.circular(12))
             : BorderRadius.zero,
       ),
       child: Align(
@@ -123,7 +128,7 @@ class _SecondaryBackground extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.red,
         borderRadius: isFirst
-            ? const BorderRadius.only(topRight: Radius.circular(12))
+            ? const BorderRadius.vertical(top: Radius.circular(12))
             : BorderRadius.zero,
       ),
       child: Align(

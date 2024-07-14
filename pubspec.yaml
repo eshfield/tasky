@@ -11,6 +11,7 @@ dependencies:
   bloc_concurrency: ^0.2.5
   connectivity_plus: ^6.0.3
   device_info_plus: ^10.1.0
+  diffutil_dart: ^4.0.1
   dio: ^5.5.0+1
   equatable: ^2.0.5
   flutter:
@@ -28,6 +29,7 @@ dependencies:
   retrofit: ^4.1.0
   shared_preferences: ^2.2.3
   uuid: ^4.4.0
+  visibility_detector: ^0.4.0+2
 
 dev_dependencies:
   bloc_test: ^9.1.7
