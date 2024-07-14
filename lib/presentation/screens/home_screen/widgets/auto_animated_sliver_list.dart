@@ -35,7 +35,8 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
   final _listKey = GlobalKey<SliverAnimatedListState>();
   var _isFirstRun = true;
   var _isVisible = true;
-  VoidCallback? functionToRunLater;
+  late VoidCallback _functionToRunLater;
+  late AutoAnimatedSliverList<T> _oldWidget;
 
   @override
   void initState() {
@@ -53,8 +54,8 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
     );
   }
 
-  void _updateList(covariant AutoAnimatedSliverList<T> oldWidget) {
-    final oldIds = oldWidget.items.map(oldWidget.idMapper).toList();
+  void _updateList() {
+    final oldIds = _oldWidget.items.map(widget.idMapper).toList();
     final newIds = widget.items.map(widget.idMapper).toList();
     final diff = calculateListDiff(oldIds, newIds, detectMoves: false);
     final updates = diff.getUpdatesWithData();
@@ -68,7 +69,7 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
         _listKey.currentState!.removeItem(
           update.position,
           (context, animation) =>
-              oldWidget.itemBuilder(context, update.position, animation),
+              _oldWidget.itemBuilder(context, update.position, animation),
           duration: widget.removeDuration,
         );
       }
@@ -78,12 +79,13 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
   @override
   void didUpdateWidget(covariant AutoAnimatedSliverList<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _oldWidget = oldWidget;
     if (_isVisible) {
-      _updateList(oldWidget);
+      _updateList();
     } else {
       // animation runs only if widget is visible, so it worth to wait for
-      // e.g. wait for closing task add/edit screen
-      functionToRunLater = () => _updateList(oldWidget);
+      // (e.g. wait for closing task add/edit screen)
+      _functionToRunLater = _updateList;
     }
   }
 
@@ -95,17 +97,22 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
         if (info.visibleFraction == 0) {
           _isVisible = false;
         } else {
-          if (functionToRunLater != null) {
-            functionToRunLater!();
-            functionToRunLater = null;
-          }
-          _isVisible = true;
+          if (_isVisible) return;
+          _functionToRunLater();
+          // rerun build to use actual itemBuilder
+          setState(() {
+            _isVisible = true;
+          });
         }
       },
       sliver: SliverAnimatedList(
         key: _listKey,
         initialItemCount: _isFirstRun ? 0 : widget.items.length,
-        itemBuilder: widget.itemBuilder,
+        // if widget is not visible we use previous itemBuilder
+        // since it contains items count before update;
+        // otherwise off-by-one error occurs: new itemBuilder has updated
+        // items count but we didn't change indexes with _updateList() yet
+        itemBuilder: _isVisible ? widget.itemBuilder : _oldWidget.itemBuilder,
       ),
     );
   }
