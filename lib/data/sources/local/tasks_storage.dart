@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app/domain/entities/task.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,6 +20,7 @@ class TasksStorage {
       return jsonDecode(data).map<Task>((json) => Task.fromJson(json)).toList();
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
   }
@@ -33,6 +35,7 @@ class TasksStorage {
       return prefs.getInt(revisionKey);
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return null;
     }
   }

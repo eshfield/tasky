@@ -12,6 +12,7 @@ import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -93,6 +94,7 @@ class AppDependencyContainer implements DependencyContainer {
       isInitializedSuccessfully = true;
     } catch (error, stackTrace) {
       Logger().f(error, stackTrace: stackTrace);
+      FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
       isInitializedSuccessfully = false;
     }
   }
