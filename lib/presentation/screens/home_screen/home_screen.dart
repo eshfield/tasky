@@ -1,5 +1,6 @@
 import 'package:app/core/constants.dart';
 import 'package:app/core/di/dependency_container.dart';
+import 'package:app/core/services/device_info_service.dart';
 import 'package:app/core/services/network_status.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
@@ -31,6 +32,7 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   late final DependencyContainer dependencyContainer;
   late final BlocDispatcher blocDispatcher;
+  late final DeviceInfoService deviceInfoService;
   late final NetworkStatus networkStatus;
   late final SyncBloc syncBloc;
   late final TasksCubit tasksCubit;
@@ -43,6 +45,7 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     dependencyContainer = context.read<DependencyContainer>();
     blocDispatcher = dependencyContainer.blocDispatcher;
+    deviceInfoService = dependencyContainer.deviceInfoService;
     networkStatus = dependencyContainer.networkStatus;
     syncBloc = dependencyContainer.syncBloc;
     tasksCubit = dependencyContainer.tasksCubit;
