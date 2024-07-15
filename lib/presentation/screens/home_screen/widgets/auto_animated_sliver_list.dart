@@ -2,8 +2,6 @@ import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-// adaptation of https://pub.dev/packages/automatic_animated_list
-
 class AutoAnimatedSliverList<T> extends StatefulWidget {
   final List<T> items;
   final String Function(T item) idMapper;
@@ -41,6 +39,7 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
   @override
   void initState() {
     super.initState();
+    _functionToRunLater = () {};
     // run initial list animation after SliverAnimatedList creation
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
@@ -55,6 +54,7 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
   }
 
   void _updateList() {
+    // adaptation of https://pub.dev/packages/automatic_animated_list
     final oldIds = _oldWidget.items.map(widget.idMapper).toList();
     final newIds = widget.items.map(widget.idMapper).toList();
     final diff = calculateListDiff(oldIds, newIds, detectMoves: false);

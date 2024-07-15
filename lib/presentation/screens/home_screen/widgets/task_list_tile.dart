@@ -8,14 +8,10 @@ import 'package:go_router/go_router.dart';
 
 class TaskListTile extends StatelessWidget {
   final Task task;
-  final bool isFirst;
-  final bool isLast;
 
   const TaskListTile(
     this.task, {
     super.key,
-    required this.isFirst,
-    required this.isLast,
   });
 
   @override
@@ -23,8 +19,6 @@ class TaskListTile extends StatelessWidget {
     final blocDispatcher = HomeScreen.of(context).blocDispatcher;
     return TaskListTileInheritedWidget(
       task: task,
-      isFirst: isFirst,
-      isLast: isLast,
       child: ClipRRect(
         clipBehavior: Clip.hardEdge,
         child: Dismissible(
@@ -42,10 +36,6 @@ class TaskListTile extends StatelessWidget {
           },
           child: Container(
             alignment: Alignment.centerLeft,
-            margin: EdgeInsets.only(
-              top: isFirst ? 8 : 0,
-              bottom: isLast ? 8 : 0,
-            ),
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,14 +57,10 @@ class TaskListTile extends StatelessWidget {
 
 class TaskListTileInheritedWidget extends InheritedWidget {
   final Task task;
-  final bool isFirst;
-  final bool isLast;
 
   const TaskListTileInheritedWidget({
     super.key,
     required this.task,
-    required this.isFirst,
-    required this.isLast,
     required super.child,
   });
 
@@ -96,13 +82,9 @@ class _Background extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFirst = TaskListTileInheritedWidget.of(context).isFirst;
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.green,
-        borderRadius: isFirst
-            ? const BorderRadius.vertical(top: Radius.circular(12))
-            : BorderRadius.zero,
       ),
       child: Align(
         alignment: Alignment.centerLeft,
@@ -123,13 +105,9 @@ class _SecondaryBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFirst = TaskListTileInheritedWidget.of(context).isFirst;
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.red,
-        borderRadius: isFirst
-            ? const BorderRadius.vertical(top: Radius.circular(12))
-            : BorderRadius.zero,
       ),
       child: Align(
         alignment: Alignment.centerRight,

@@ -5,7 +5,9 @@ import 'package:app/presentation/screens/home_screen/widgets/task_list_tile.dart
 import 'package:app/core/extensions/app_theme_extension.dart';
 import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sliver_tools/sliver_tools.dart';
 
 class TasksList extends StatelessWidget {
   final List<Task> tasks;
@@ -26,7 +28,10 @@ class TasksList extends StatelessWidget {
           ),
           sliver: const SliverMainAxisGroup(
             slivers: [
-              _TasksList(),
+              SliverPadding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                sliver: _TasksList(),
+              ),
               _CreateTaskButton(),
             ],
           ),
@@ -63,28 +68,35 @@ class _TasksList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tasks = TaskListInheritedWidget.of(context).tasks;
-    return AutoAnimatedSliverList(
-      items: tasks,
-      idMapper: (item) => item.id,
-      itemBuilder: (context, index, animation) {
-        final task = tasks[index];
-        return FadeTransition(
-          opacity: animation,
-          child: SizeTransition(
-            sizeFactor: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOut,
-              reverseCurve: Curves.easeIn,
-            ),
-            child: TaskListTile(
-              task,
-              isFirst: index == 0,
-              isLast: index == tasks.length - 1,
-            ),
+    final orientation = MediaQuery.orientationOf(context);
+    return switch (orientation) {
+      Orientation.portrait => AutoAnimatedSliverList(
+          items: tasks,
+          idMapper: (item) => item.id,
+          itemBuilder: (context, index, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SizeTransition(
+                sizeFactor: CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOut,
+                  reverseCurve: Curves.easeIn,
+                ),
+                child: TaskListTile(tasks[index]),
+              ),
+            );
+          },
+        ),
+      Orientation.landscape => SliverAnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: SliverMasonryGrid.count(
+            key: UniqueKey(),
+            childCount: tasks.length,
+            crossAxisCount: 2,
+            itemBuilder: (context, index) => TaskListTile(tasks[index]),
           ),
-        );
-      },
-    );
+        ),
+    };
   }
 }
 

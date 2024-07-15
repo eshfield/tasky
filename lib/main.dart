@@ -3,13 +3,11 @@ import 'package:app/core/extensions/l10n_extension.dart';
 import 'package:app/core/theme/theme.dart';
 import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final dependencyContainer = await AppDependencyContainer.create();
   runApp(MainApp(dependencyContainer));
 }
