@@ -1,7 +1,7 @@
 import 'package:app/core/constants.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +17,7 @@ class TasksVisibilityButton extends StatelessWidget {
         HomeScreen.of(context).scrollController.animateTo(
               0,
               duration: appTopBarAnimationDuration,
-              curve: appCurve,
+              curve: appTorBarCurve,
             );
       },
       icon: BlocBuilder<TasksCubit, TasksState>(

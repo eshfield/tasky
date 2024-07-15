@@ -1,6 +1,7 @@
+import 'package:app/core/di/remote_config.dart';
 import 'package:app/domain/entities/task.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:app/core/routing.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,7 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
     final isImportant = task.importance == Importance.important;
+    final importanceColor = RemoteConfig.importanceColorOf(context);
     return Checkbox(
       fillColor: WidgetStateProperty.resolveWith(
         (states) {
@@ -137,15 +139,14 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
             return context.appColors.green;
           }
           if (isImportant) {
-            return context.appColors.red.withOpacity(0.16);
+            return importanceColor.withOpacity(0.16);
           }
           return Colors.transparent;
         },
       ),
       side: BorderSide(
-        color: isImportant
-            ? context.appColors.red
-            : context.appColors.supportSeparator,
+        color:
+            isImportant ? importanceColor : context.appColors.supportSeparator,
         width: 2,
       ),
       value: task.isDone,
@@ -196,6 +197,7 @@ class _TaskText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
+    final importanceColor = RemoteConfig.importanceColorOf(context);
     return RichText(
       text: TextSpan(
         children: [
@@ -211,7 +213,7 @@ class _TaskText extends StatelessWidget {
                 Importance.basic => const SizedBox.shrink(),
                 Importance.important => Icon(
                     Icons.arrow_upward,
-                    color: context.appColors.red,
+                    color: importanceColor,
                     size: 20,
                   ),
               },

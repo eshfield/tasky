@@ -1,7 +1,11 @@
 import 'package:app/core/di/dependency_container.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/di/remote_config.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/core/theme/theme.dart';
 import 'package:app/core/routing.dart';
+import 'package:app/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -9,25 +13,29 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final dependencyContainer = await AppDependencyContainer.create();
-  runApp(MainApp(dependencyContainer));
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseRemoteConfig.instance.fetchAndActivate();
+  runApp(App(dependencyContainer));
 }
 
-class MainApp extends StatelessWidget {
+class App extends StatelessWidget {
   final DependencyContainer dependencyContainer;
 
-  const MainApp(this.dependencyContainer, {super.key});
+  const App(this.dependencyContainer, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Provider.value(
       value: dependencyContainer,
-      child: MaterialApp.router(
-        darkTheme: AppTheme.dark,
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: routerConfig,
-        onGenerateTitle: (context) => context.l10n.appTitle,
+      child: RemoteConfig(
+        child: MaterialApp.router(
+          darkTheme: AppTheme.dark,
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: routerConfig,
+          onGenerateTitle: (context) => context.l10n.appTitle,
+        ),
       ),
     );
   }

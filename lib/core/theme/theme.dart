@@ -5,26 +5,26 @@ import 'package:flutter/material.dart';
 abstract class AppTheme {
   static final _base = ThemeData(
     fontFamily: 'Roboto',
-    colorSchemeSeed: _lightAppColors.blue,
+    colorSchemeSeed: lightAppColors.blue,
   );
 
   static final light = _base.copyWith(
     brightness: Brightness.light,
     extensions: const [
-      _lightAppColors,
-      _appTextStyles,
+      lightAppColors,
+      appTextStyles,
     ],
   );
 
   static final dark = _base.copyWith(
     brightness: Brightness.dark,
     extensions: const [
-      _darkAppColors,
-      _appTextStyles,
+      darkAppColors,
+      appTextStyles,
     ],
   );
 
-  static const _lightAppColors = AppColors(
+  static const lightAppColors = AppColors(
     supportSeparator: Color(0x33000000),
     supportOverlay: Color(0x0F000000),
     labelPrimary: Color(0xFF000000),
@@ -42,7 +42,7 @@ abstract class AppTheme {
     backElevated: Color(0xFFFFFFFF),
   );
 
-  static const _darkAppColors = AppColors(
+  static const darkAppColors = AppColors(
     supportSeparator: Color(0x33FFFFFF),
     supportOverlay: Color(0x52000000),
     labelPrimary: Color(0xFFFFFFFF),
@@ -60,7 +60,7 @@ abstract class AppTheme {
     backElevated: Color(0xFF3C3C3F),
   );
 
-  static const _appTextStyles = AppTextStyles(
+  static const appTextStyles = AppTextStyles(
     titleLarge: TextStyle(
       fontSize: 32,
       fontWeight: FontWeight.w500,

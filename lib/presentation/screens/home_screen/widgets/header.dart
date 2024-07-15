@@ -1,9 +1,9 @@
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

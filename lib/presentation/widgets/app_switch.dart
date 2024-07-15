@@ -1,4 +1,4 @@
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class AppSwitch extends StatelessWidget {

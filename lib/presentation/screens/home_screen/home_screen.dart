@@ -5,7 +5,7 @@ import 'package:app/core/services/network_status.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
 import 'package:app/presentation/screens/home_screen/widgets/header.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_list.dart';
@@ -13,7 +13,7 @@ import 'package:app/presentation/widgets/app_error.dart';
 import 'package:app/presentation/widgets/app_loader.dart';
 import 'package:app/presentation/widgets/app_snack_bar.dart';
 import 'package:app/presentation/widgets/app_top_bar.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -208,11 +208,11 @@ class _TopBar extends StatelessWidget {
       top: showAppBar ? 0 : -appTopBarHeight,
       left: 0,
       right: 0,
-      curve: appCurve,
+      curve: appTorBarCurve,
       duration: appTopBarAnimationDuration,
       child: AnimatedOpacity(
         opacity: showAppBar ? 1 : 0,
-        curve: appCurve,
+        curve: appTorBarCurve,
         duration: appTopBarAnimationDuration,
         child: AppTopBar(
           title: context.l10n.homeTitle,

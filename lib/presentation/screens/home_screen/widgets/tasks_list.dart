@@ -1,9 +1,9 @@
 import 'package:app/domain/entities/task.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:app/presentation/screens/home_screen/widgets/auto_animated_sliver_list.dart';
 import 'package:app/presentation/screens/home_screen/widgets/task_list_tile.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';

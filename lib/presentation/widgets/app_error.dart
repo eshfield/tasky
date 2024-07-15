@@ -1,5 +1,5 @@
-import 'package:app/core/extensions/l10n_extension.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class AppError extends StatelessWidget {

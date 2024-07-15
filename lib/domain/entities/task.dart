@@ -1,4 +1,4 @@
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/core/utils/unix_timestamp_json_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';

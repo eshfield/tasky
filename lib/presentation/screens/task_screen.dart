@@ -1,10 +1,11 @@
 import 'package:app/core/di/dependency_container.dart';
+import 'package:app/core/di/remote_config.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/entities/task.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/widgets/app_top_bar.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:app/presentation/widgets/app_date_picker.dart';
 import 'package:app/presentation/widgets/app_dropdown_menu.dart';
 import 'package:app/presentation/widgets/app_switch.dart';
@@ -237,6 +238,7 @@ class _ImportanceMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final importance = TaskScreen.importanceOf(context);
+    final importanceColor = RemoteConfig.importanceColorOf(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -246,7 +248,7 @@ class _ImportanceMenu extends StatelessWidget {
           key: const ValueKey('taskImportanceMenu'),
           initialSelection: importance,
           textColor: importance == Importance.important
-              ? context.appColors.red
+              ? importanceColor
               : context.appColors.labelPrimary,
           onSelected: TaskScreen.of(context).setImportance,
           dropdownMenuEntries: Importance.values.map((value) {
@@ -258,7 +260,7 @@ class _ImportanceMenu extends StatelessWidget {
                 labelText,
                 style: context.appTextStyles.body.copyWith(
                   color: value == Importance.important
-                      ? context.appColors.red
+                      ? importanceColor
                       : context.appColors.labelPrimary,
                 ),
               ),

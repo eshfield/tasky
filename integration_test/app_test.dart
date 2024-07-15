@@ -155,7 +155,7 @@ void main() {
       testWidgets(
         'add task',
         (tester) async {
-          await tester.pumpWidget(MainApp(dependencyContainer));
+          await tester.pumpWidget(App(dependencyContainer));
 
           // wait initial tasks loading
           await tester.pumpAndSettle(const Duration(seconds: 1));
