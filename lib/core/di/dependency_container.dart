@@ -5,6 +5,7 @@ import 'package:app/core/env_config.dart';
 import 'package:app/core/interceptors/error_interceptor.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/core/services/network_status.dart';
+import 'package:app/core/services/settings_storage.dart';
 import 'package:app/core/services/sync_storage.dart';
 import 'package:app/data/repositories/tasks_repository.dart';
 import 'package:app/data/sources/local/tasks_storage.dart';
@@ -80,6 +81,7 @@ class AppDependencyContainer implements DependencyContainer {
 
       final prefs = await SharedPreferences.getInstance();
       final tasksStorage = TasksStorage(prefs);
+      final settingsStorage = SettingsStorage(prefs);
       final syncStorage = SyncStorage(prefs);
 
       networkStatus = NetworkStatus();
@@ -105,7 +107,7 @@ class AppDependencyContainer implements DependencyContainer {
       deviceInfoService = DeviceInfoService();
       await deviceInfoService.init();
 
-      tasksCubit = TasksCubit();
+      tasksCubit = TasksCubit(settingsStorage);
       syncBloc = SyncBloc(tasksRepository);
 
       blocDispatcher = BlocDispatcher(

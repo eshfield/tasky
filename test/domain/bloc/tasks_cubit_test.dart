@@ -1,11 +1,16 @@
+import 'package:app/core/services/settings_storage.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 const deviceId = 'device1';
 
+class MockSettingsStorage extends Mock implements SettingsStorage {}
+
 void main() {
+  late MockSettingsStorage mockSettingsStorage;
   late List<Task> startTasks;
   late TasksState startState;
   late Task taskToAdd;
@@ -13,6 +18,8 @@ void main() {
 
   setUp(
     () {
+      mockSettingsStorage = MockSettingsStorage();
+
       final now1 = DateTime.now();
       final now2 = DateTime.now().subtract(const Duration(minutes: 1));
       startTasks = [
@@ -32,7 +39,11 @@ void main() {
         ),
       ];
 
-      startState = TasksState(startTasks, isInitialized: true);
+      startState = TasksState(
+        startTasks,
+        showDoneTasks: false,
+        isInitialized: true,
+      );
 
       taskToAdd = Task(
         id: 'id3',
@@ -54,7 +65,7 @@ void main() {
     },
   );
 
-  TasksCubit build() => TasksCubit();
+  TasksCubit build() => TasksCubit(mockSettingsStorage);
 
   group(
     'TasksCubit',

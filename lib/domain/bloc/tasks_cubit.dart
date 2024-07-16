@@ -1,9 +1,16 @@
+import 'package:app/core/services/settings_storage.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TasksCubit extends Cubit<TasksState> {
-  TasksCubit() : super(const TasksState([]));
+  final SettingsStorage settingsStorage;
+
+  TasksCubit(this.settingsStorage)
+      : super(TasksState(
+          const [],
+          showDoneTasks: settingsStorage.loadShowDoneTasks() ?? false,
+        ));
 
   void setTasks(List<Task> tasks) {
     final sortedTasks = [...tasks]
@@ -30,7 +37,9 @@ class TasksCubit extends Cubit<TasksState> {
   }
 
   void toggleShowDoneTasks() {
-    emit(state.copyWith(showDoneTasks: !state.showDoneTasks));
+    final newShowDoneTasks = !state.showDoneTasks;
+    settingsStorage.saveShowDoneTasks(newShowDoneTasks);
+    emit(state.copyWith(showDoneTasks: newShowDoneTasks));
   }
 }
 
@@ -41,7 +50,7 @@ class TasksState extends Equatable {
 
   const TasksState(
     this.tasks, {
-    this.showDoneTasks = false,
+    required this.showDoneTasks,
     this.isInitialized = false,
   });
 

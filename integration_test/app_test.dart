@@ -1,6 +1,7 @@
 import 'package:app/core/di/dependency_container.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/core/services/network_status.dart';
+import 'package:app/core/services/settings_storage.dart';
 import 'package:app/core/services/sync_storage.dart';
 import 'package:app/data/dtos/task_dto.dart';
 import 'package:app/data/dtos/tasks_dto.dart';
@@ -32,6 +33,8 @@ class MockNetworkStatus extends Mock implements NetworkStatus {}
 class MockAnalytics extends Mock implements FirebaseAnalytics {}
 
 class MockRemoteConfig extends Mock implements FirebaseRemoteConfig {}
+
+class MockSettingsStorage extends Mock implements SettingsStorage {}
 
 class MockSyncStorage extends Mock implements SyncStorage {}
 
@@ -105,6 +108,7 @@ void main() {
       final mockAnalytics = MockAnalytics();
       final mockRemoteConfig = MockRemoteConfig();
       final mockNetworkStatus = MockNetworkStatus();
+      final mockSettingsStorage = MockSettingsStorage();
       final mockSyncStorage = MockSyncStorage();
       mockTasksApi = MockTasksApi();
       final mockTasksStorage = MockTasksStorage();
@@ -138,7 +142,7 @@ void main() {
         mockTasksStorage,
         mockNetworkStatus,
       );
-      final tasksCubit = TasksCubit();
+      final tasksCubit = TasksCubit(mockSettingsStorage);
       final syncBloc = SyncBloc(tasksRepository);
       final blocDispatcher = BlocDispatcher(
         tasksRepository: tasksRepository,
