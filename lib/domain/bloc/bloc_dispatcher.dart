@@ -25,7 +25,7 @@ class BlocDispatcher {
     required this.syncStorage,
     required this.analytics,
   }) {
-    _needToSync = syncStorage.loadNeedToSync() ?? false;
+    _needToSync = syncStorage.getNeedToSync() ?? false;
 
     // autosave tasks to local storage
     _tasksSubscription = tasksCubit.stream.listen((state) {
@@ -64,7 +64,7 @@ class BlocDispatcher {
 
   void _setNeedToSync(bool value) {
     _needToSync = value;
-    syncStorage.saveNeedToSync(value);
+    syncStorage.setNeedToSync(value);
   }
 
   void addTask(Task task) {

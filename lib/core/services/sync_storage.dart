@@ -9,7 +9,7 @@ class SyncStorage {
 
   SyncStorage(this.prefs);
 
-  bool? loadNeedToSync() {
+  bool? getNeedToSync() {
     try {
       return prefs.getBool(needToSyncKey);
     } catch (error, stackTrace) {
@@ -19,7 +19,7 @@ class SyncStorage {
     }
   }
 
-  void saveNeedToSync(bool? needToSync) {
+  void setNeedToSync(bool? needToSync) {
     if (needToSync == null) {
       prefs.remove(needToSyncKey);
     } else {

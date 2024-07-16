@@ -9,7 +9,7 @@ class TasksCubit extends Cubit<TasksState> {
   TasksCubit(this.settingsStorage)
       : super(TasksState(
           const [],
-          showDoneTasks: settingsStorage.loadShowDoneTasks() ?? false,
+          showDoneTasks: settingsStorage.getShowDoneTasks() ?? false,
         ));
 
   void setTasks(List<Task> tasks) {
@@ -38,7 +38,7 @@ class TasksCubit extends Cubit<TasksState> {
 
   void toggleShowDoneTasks() {
     final newShowDoneTasks = !state.showDoneTasks;
-    settingsStorage.saveShowDoneTasks(newShowDoneTasks);
+    settingsStorage.setShowDoneTasks(newShowDoneTasks);
     emit(state.copyWith(showDoneTasks: newShowDoneTasks));
   }
 }

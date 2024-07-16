@@ -69,7 +69,7 @@ void main() {
         mockNetworkStatus,
       );
 
-      when(() => mockTasksStorage.loadTasks())
+      when(() => mockTasksStorage.getTasks())
           .thenAnswer((_) => storageResults.removeAt(0));
 
       when(() => mockNetworkStatus.isOnline).thenReturn(true);

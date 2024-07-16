@@ -9,7 +9,7 @@ class SettingsStorage {
 
   SettingsStorage(this.prefs);
 
-  bool? loadShowDoneTasks() {
+  bool? getShowDoneTasks() {
     try {
       return prefs.getBool(showDoneTasksKey);
     } catch (error, stackTrace) {
@@ -19,7 +19,7 @@ class SettingsStorage {
     }
   }
 
-  void saveShowDoneTasks(bool? showDoneTasks) {
+  void setShowDoneTasks(bool? showDoneTasks) {
     if (showDoneTasks == null) {
       prefs.remove(showDoneTasksKey);
     } else {

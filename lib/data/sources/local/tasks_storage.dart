@@ -13,7 +13,7 @@ class TasksStorage {
 
   TasksStorage(this.prefs);
 
-  List<Task>? loadTasks() {
+  List<Task>? getTasks() {
     try {
       final data = prefs.getString(tasksKey);
       if (data == null) return null;
@@ -25,12 +25,12 @@ class TasksStorage {
     }
   }
 
-  void saveTasks(List<Task> tasks) {
+  void setTasks(List<Task> tasks) {
     final data = jsonEncode(tasks);
     prefs.setString(tasksKey, data);
   }
 
-  int? loadRevision() {
+  int? getRevision() {
     try {
       return prefs.getInt(revisionKey);
     } catch (error, stackTrace) {
@@ -40,7 +40,7 @@ class TasksStorage {
     }
   }
 
-  void saveRevision(int? revision) {
+  void setRevision(int? revision) {
     if (revision == null) {
       prefs.remove(revisionKey);
     } else {
