@@ -185,7 +185,7 @@ void main() {
           await tester.pumpWidget(App(dependencyContainer));
 
           // wait initial tasks loading
-          await tester.pumpAndSettle(const Duration(seconds: 1));
+          await tester.pumpAndSettle();
           expect(find.byKey(ValueKey(startTask.id)), findsOneWidget);
 
           final startTaskTile = findTaskTile(startTask.text);
