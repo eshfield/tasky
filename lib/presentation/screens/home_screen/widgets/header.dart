@@ -1,3 +1,4 @@
+import 'package:app/core/env_config.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/core/extensions/l10n.dart';
@@ -17,29 +18,37 @@ class Header extends StatelessWidget {
       width: double.infinity,
       height: 124,
       padding: const EdgeInsets.only(left: 60, right: 20),
-      child: const Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _Title(),
+              Row(
+                children: [
+                  Expanded(
+                    child: _Title(),
+                  ),
+                  SizedBox(width: 16),
+                  _SyncIcon(),
+                ],
               ),
-              SizedBox(width: 16),
-              _SyncIcon(),
+              Row(
+                children: [
+                  Expanded(
+                    child: _DoneTasksCounter(),
+                  ),
+                  SizedBox(width: 16),
+                  TasksVisibilityButton(),
+                ],
+              ),
             ],
           ),
-          SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(
-                child: _DoneTasksCounter(),
-              ),
-              SizedBox(width: 16),
-              TasksVisibilityButton(),
-            ],
-          ),
+          if (EnvConfig.isNotProd)
+            const Positioned(
+              top: 4,
+              child: _EnvLabel(),
+            ),
         ],
       ),
     );
@@ -184,6 +193,27 @@ class _DoneTasksCounter extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         );
       },
+    );
+  }
+}
+
+class _EnvLabel extends StatelessWidget {
+  const _EnvLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: context.appColors.labelPrimary),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      child: Text(
+        EnvConfig.env.toUpperCase(),
+        style: context.appTextStyles.body.copyWith(
+          color: context.appColors.labelPrimary,
+        ),
+        textAlign: TextAlign.end,
+      ),
     );
   }
 }

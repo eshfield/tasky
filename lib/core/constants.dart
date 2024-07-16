@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
-const tokenArgName = 'TOKEN';
+enum Env {
+  dev,
+  prod,
+}
+
+const envArg = 'TASKY_ENV';
+// can't use Env.dev.name for default value because it is not a const
+const envArgDefaultValue = 'dev';
+const tokenArg = 'TASKY_TOKEN';
 
 const unknownDeviceId = 'UNKNOWN_DEVICE';
 

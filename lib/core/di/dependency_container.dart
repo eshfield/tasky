@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app/core/constants.dart';
+import 'package:app/core/env_config.dart';
 import 'package:app/core/interceptors/error_interceptor.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/core/services/network_status.dart';
@@ -57,7 +57,7 @@ class AppDependencyContainer implements DependencyContainer {
       networkStatus = NetworkStatus();
 
       final dio = Dio();
-      const token = String.fromEnvironment(tokenArgName);
+      final token = EnvConfig.apiToken;
       dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $token';
       dio.options.contentType = Headers.jsonContentType;
       dio.interceptors.add(PrettyDioLogger(
