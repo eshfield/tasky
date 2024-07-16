@@ -6,8 +6,9 @@ class TasksCubit extends Cubit<TasksState> {
   TasksCubit() : super(const TasksState([]));
 
   void setTasks(List<Task> tasks) {
-    tasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    emit(state.copyWith(tasks: tasks, isInitialized: true));
+    final sortedTasks = [...tasks]
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    emit(state.copyWith(tasks: sortedTasks, isInitialized: true));
   }
 
   void addTask(Task task) {

@@ -46,7 +46,7 @@ void main() {
       taskToUpdate = startTasks.first.copyWith(
         text: 'Updated text',
         importance: Importance.important,
-        deadline: () => now3,
+        deadline: now3,
         isDone: true,
         changedAt: now3,
         lastUpdatedBy: deviceId,

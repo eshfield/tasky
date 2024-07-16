@@ -389,7 +389,7 @@ class _SaveButton extends StatelessWidget {
           final editedTask = taskToEdit!.copyWith(
             text: text,
             importance: importance,
-            deadline: () => deadline,
+            deadline: deadline,
             changedAt: now,
             lastUpdatedBy: deviceId,
           );

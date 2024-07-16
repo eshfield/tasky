@@ -1,18 +1,16 @@
 import 'package:app/domain/entities/task.dart';
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'task_dto.freezed.dart';
 part 'task_dto.g.dart';
 
-@JsonSerializable()
-class TaskDto {
-  @JsonKey(name: 'element')
-  final Task task;
-  @JsonKey(includeToJson: false)
-  final int revision;
-
-  TaskDto(this.task, this.revision);
+@freezed
+class TaskDto with _$TaskDto {
+  factory TaskDto(
+    @JsonKey(name: 'element') Task task,
+    @JsonKey(includeToJson: false) int revision,
+  ) = _TaskDto;
 
   factory TaskDto.fromJson(Map<String, dynamic> json) =>
       _$TaskDtoFromJson(json);
-  Map<String, dynamic> toJson() => _$TaskDtoToJson(this);
 }

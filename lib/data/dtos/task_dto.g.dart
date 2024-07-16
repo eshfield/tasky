@@ -6,11 +6,13 @@ part of 'task_dto.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TaskDto _$TaskDtoFromJson(Map<String, dynamic> json) => TaskDto(
+_$TaskDtoImpl _$$TaskDtoImplFromJson(Map<String, dynamic> json) =>
+    _$TaskDtoImpl(
       Task.fromJson(json['element'] as Map<String, dynamic>),
       (json['revision'] as num).toInt(),
     );
 
-Map<String, dynamic> _$TaskDtoToJson(TaskDto instance) => <String, dynamic>{
+Map<String, dynamic> _$$TaskDtoImplToJson(_$TaskDtoImpl instance) =>
+    <String, dynamic>{
       'element': instance.task,
     };

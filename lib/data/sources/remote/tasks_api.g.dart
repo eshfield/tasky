@@ -56,8 +56,7 @@ class _TasksApi implements TasksApi {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'X-Last-Known-Revision': revision};
     _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    _data.addAll(requestTasksDto.toJson());
+    final _data = requestTasksDto;
     final _result =
         await _dio.fetch<Map<String, dynamic>>(_setStreamType<TasksDto>(Options(
       method: 'PATCH',
@@ -88,8 +87,7 @@ class _TasksApi implements TasksApi {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'X-Last-Known-Revision': revision};
     _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    _data.addAll(requestTaskDto.toJson());
+    final _data = requestTaskDto;
     final _result =
         await _dio.fetch<Map<String, dynamic>>(_setStreamType<TaskDto>(Options(
       method: 'POST',
@@ -121,8 +119,7 @@ class _TasksApi implements TasksApi {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'X-Last-Known-Revision': revision};
     _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    _data.addAll(requestTaskDto.toJson());
+    final _data = requestTaskDto;
     final _result =
         await _dio.fetch<Map<String, dynamic>>(_setStreamType<TaskDto>(Options(
       method: 'PUT',
