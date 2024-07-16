@@ -28,7 +28,7 @@ class BlocDispatcher {
     _needToSync = syncStorage.loadNeedToSync() ?? false;
 
     // autosave tasks to local storage
-    tasksCubit.stream.listen((state) {
+    _tasksSubscription = tasksCubit.stream.listen((state) {
       if (state.isInitialized) {
         tasksRepository.saveTasksLocally(state.tasks);
       }
@@ -43,6 +43,7 @@ class BlocDispatcher {
   }
 
   late bool _needToSync;
+  late StreamSubscription<TasksState> _tasksSubscription;
 
   // the method is separated in order to run it from the error screen widget
   void getInitialTasks() {
@@ -113,5 +114,9 @@ class BlocDispatcher {
         AnalyticsParameter.taskId.name: id,
       },
     );
+  }
+
+  void dispose() {
+    _tasksSubscription.cancel();
   }
 }
