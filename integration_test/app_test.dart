@@ -12,6 +12,7 @@ import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:app/main.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,6 +28,8 @@ const taskToAddText = 'New task';
 class MockDeviceInfoService extends Mock implements DeviceInfoService {}
 
 class MockNetworkStatus extends Mock implements NetworkStatus {}
+
+class MockAnalytics extends Mock implements FirebaseAnalytics {}
 
 class MockRemoteConfig extends Mock implements FirebaseRemoteConfig {}
 
@@ -51,11 +54,13 @@ class AppTestDependencyContainer implements DependencyContainer {
   @override
   final MockNetworkStatus networkStatus;
   @override
-  final MockRemoteConfig remoteConfig;
-  @override
   final SyncBloc syncBloc;
   @override
   final TasksCubit tasksCubit;
+  @override
+  late final FirebaseAnalytics analytics;
+  @override
+  final MockRemoteConfig remoteConfig;
   @override
   final bool isInitializedSuccessfully;
 
@@ -63,9 +68,10 @@ class AppTestDependencyContainer implements DependencyContainer {
     required this.blocDispatcher,
     required this.deviceInfoService,
     required this.networkStatus,
-    required this.remoteConfig,
     required this.syncBloc,
     required this.tasksCubit,
+    required this.analytics,
+    required this.remoteConfig,
     this.isInitializedSuccessfully = true,
   });
 }
@@ -96,15 +102,22 @@ void main() {
       );
 
       // mocked dependencies
-      final remoteConfig = MockRemoteConfig();
+      final mockAnalytics = MockAnalytics();
+      final mockRemoteConfig = MockRemoteConfig();
       final mockNetworkStatus = MockNetworkStatus();
       final mockSyncStorage = MockSyncStorage();
       mockTasksApi = MockTasksApi();
       final mockTasksStorage = MockTasksStorage();
 
-      when(() => remoteConfig.getString(any(that: isA<String>())))
+      when(
+        () => mockAnalytics.logEvent(
+          name: any(named: 'name', that: isA<String>()),
+          parameters: (any(named: 'parameters', that: isA<Map>())),
+        ),
+      ).thenAnswer((_) async => {});
+      when(() => mockRemoteConfig.getString(any(that: isA<String>())))
           .thenReturn('');
-      when(() => remoteConfig.onConfigUpdated)
+      when(() => mockRemoteConfig.onConfigUpdated)
           .thenAnswer((_) => const Stream.empty());
       when(() => mockNetworkStatus.isOnline).thenReturn(true);
       when(() => mockTasksApi.getTasks())
@@ -133,6 +146,7 @@ void main() {
         syncBloc: syncBloc,
         networkStatus: mockNetworkStatus,
         syncStorage: mockSyncStorage,
+        analytics: mockAnalytics,
       );
       final deviceInfoService = DeviceInfoService();
       await deviceInfoService.init();
@@ -141,8 +155,9 @@ void main() {
         blocDispatcher: blocDispatcher,
         deviceInfoService: deviceInfoService,
         networkStatus: mockNetworkStatus,
-        remoteConfig: remoteConfig,
         syncBloc: syncBloc,
+        analytics: mockAnalytics,
+        remoteConfig: mockRemoteConfig,
         tasksCubit: tasksCubit,
       );
     },
