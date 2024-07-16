@@ -12,6 +12,7 @@ import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:app/main.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +27,8 @@ const taskToAddText = 'New task';
 class MockDeviceInfoService extends Mock implements DeviceInfoService {}
 
 class MockNetworkStatus extends Mock implements NetworkStatus {}
+
+class MockRemoteConfig extends Mock implements FirebaseRemoteConfig {}
 
 class MockSyncStorage extends Mock implements SyncStorage {}
 
@@ -48,6 +51,8 @@ class AppTestDependencyContainer implements DependencyContainer {
   @override
   final MockNetworkStatus networkStatus;
   @override
+  final MockRemoteConfig remoteConfig;
+  @override
   final SyncBloc syncBloc;
   @override
   final TasksCubit tasksCubit;
@@ -58,6 +63,7 @@ class AppTestDependencyContainer implements DependencyContainer {
     required this.blocDispatcher,
     required this.deviceInfoService,
     required this.networkStatus,
+    required this.remoteConfig,
     required this.syncBloc,
     required this.tasksCubit,
     this.isInitializedSuccessfully = true,
@@ -90,11 +96,16 @@ void main() {
       );
 
       // mocked dependencies
+      final remoteConfig = MockRemoteConfig();
       final mockNetworkStatus = MockNetworkStatus();
       final mockSyncStorage = MockSyncStorage();
       mockTasksApi = MockTasksApi();
       final mockTasksStorage = MockTasksStorage();
 
+      when(() => remoteConfig.getString(any(that: isA<String>())))
+          .thenReturn('');
+      when(() => remoteConfig.onConfigUpdated)
+          .thenAnswer((_) => const Stream.empty());
       when(() => mockNetworkStatus.isOnline).thenReturn(true);
       when(() => mockTasksApi.getTasks())
           .thenAnswer((_) async => TasksDto([startTask], revision));
@@ -130,6 +141,7 @@ void main() {
         blocDispatcher: blocDispatcher,
         deviceInfoService: deviceInfoService,
         networkStatus: mockNetworkStatus,
+        remoteConfig: remoteConfig,
         syncBloc: syncBloc,
         tasksCubit: tasksCubit,
       );

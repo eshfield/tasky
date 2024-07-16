@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:app/core/env_config.dart';
 import 'package:app/core/interceptors/error_interceptor.dart';
@@ -11,8 +12,12 @@ import 'package:app/data/sources/remote/tasks_api.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
+import 'package:app/firebase_options.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +26,7 @@ abstract class DependencyContainer {
   BlocDispatcher get blocDispatcher;
   DeviceInfoService get deviceInfoService;
   NetworkStatus get networkStatus;
+  FirebaseRemoteConfig get remoteConfig;
   SyncBloc get syncBloc;
   TasksCubit get tasksCubit;
   bool get isInitializedSuccessfully;
@@ -33,6 +39,8 @@ class AppDependencyContainer implements DependencyContainer {
   late final DeviceInfoService deviceInfoService;
   @override
   late final NetworkStatus networkStatus;
+  @override
+  late final FirebaseRemoteConfig remoteConfig;
   @override
   late final SyncBloc syncBloc;
   @override
@@ -50,6 +58,21 @@ class AppDependencyContainer implements DependencyContainer {
 
   Future<void> _init() async {
     try {
+      final options = DefaultFirebaseOptions.currentPlatform;
+      await Firebase.initializeApp(options: options);
+      FlutterError.onError =
+          FirebaseCrashlytics.instance.recordFlutterFatalError;
+      PlatformDispatcher.instance.onError = (error, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(
+          error,
+          stackTrace,
+          fatal: true,
+        );
+        return true;
+      };
+      remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.fetchAndActivate();
+
       final prefs = await SharedPreferences.getInstance();
       final tasksStorage = TasksStorage(prefs);
       final syncStorage = SyncStorage(prefs);

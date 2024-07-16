@@ -7,10 +7,12 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 
 class RemoteConfig extends StatefulWidget {
+  final FirebaseRemoteConfig remoteConfig;
   final Widget child;
 
   const RemoteConfig({
     super.key,
+    required this.remoteConfig,
     required this.child,
   });
 
@@ -25,7 +27,6 @@ class RemoteConfig extends StatefulWidget {
 }
 
 class RemoteConfigState extends State<RemoteConfig> {
-  final _remoteConfig = FirebaseRemoteConfig.instance;
   late StreamSubscription<RemoteConfigUpdate> _remoteConfigSubscription;
   late Color importanceColor;
 
@@ -34,18 +35,19 @@ class RemoteConfigState extends State<RemoteConfig> {
     super.initState();
 
     importanceColor = AppTheme.lightAppColors.red;
-    final importanceColorHex = _remoteConfig.getString(rcImportanceColorKey);
+    final importanceColorHex =
+        widget.remoteConfig.getString(rcImportanceColorKey);
     if (importanceColorHex.isNotEmpty) {
       importanceColor = ColorHex.fromHex(importanceColorHex);
     }
 
-    _remoteConfigSubscription = FirebaseRemoteConfig.instance.onConfigUpdated
-        .listen(_handleRemoteConfigUpdates);
+    _remoteConfigSubscription =
+        widget.remoteConfig.onConfigUpdated.listen(_handleRemoteConfigUpdates);
   }
 
   void _handleRemoteConfigUpdates(RemoteConfigUpdate event) async {
-    await _remoteConfig.activate();
-    final hexColor = _remoteConfig.getString(rcImportanceColorKey);
+    await widget.remoteConfig.activate();
+    final hexColor = widget.remoteConfig.getString(rcImportanceColorKey);
     if (hexColor.isEmpty) return;
     setState(() {
       importanceColor = ColorHex.fromHex(hexColor);
