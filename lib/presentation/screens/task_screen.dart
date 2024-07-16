@@ -1,5 +1,5 @@
 import 'package:app/core/di/dependency_container.dart';
-import 'package:app/core/di/remote_config.dart';
+import 'package:app/core/app_inherited_models/remote_config.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/entities/task.dart';

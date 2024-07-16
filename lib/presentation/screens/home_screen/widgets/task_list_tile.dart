@@ -1,4 +1,4 @@
-import 'package:app/core/di/remote_config.dart';
+import 'package:app/core/app_inherited_models/remote_config.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:app/core/extensions/l10n.dart';
 import 'package:app/core/extensions/app_theme.dart';

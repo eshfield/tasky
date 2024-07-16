@@ -1,3 +1,4 @@
+import 'package:app/core/constants.dart';
 import 'package:app/core/di/dependency_container.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:app/presentation/screens/app_init_error_screen.dart';
@@ -30,12 +31,31 @@ final routerConfig = GoRouter(
     GoRoute(
       name: AppRoute.home.name,
       path: AppRoute.home.path,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) {
+        final analytics = context.read<DependencyContainer>().analytics;
+        analytics.logEvent(
+          name: AnalyticsEvent.screenNavigation.name,
+          parameters: {
+            AnalyticsParameter.navigationDestination.name: AppRoute.home.path,
+          },
+        );
+        return const HomeScreen();
+      },
       routes: [
         GoRoute(
           name: AppRoute.task.name,
           path: AppRoute.task.path,
-          builder: (context, state) => TaskScreen(state.extra as Task?),
+          builder: (context, state) {
+            final analytics = context.read<DependencyContainer>().analytics;
+            analytics.logEvent(
+              name: AnalyticsEvent.screenNavigation.name,
+              parameters: {
+                AnalyticsParameter.navigationDestination.name:
+                    AppRoute.task.path,
+              },
+            );
+            return TaskScreen(state.extra as Task?);
+          },
         ),
       ],
     ),

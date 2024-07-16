@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:app/core/constants.dart';
 import 'package:app/core/services/network_status.dart';
 import 'package:app/core/services/sync_storage.dart';
 import 'package:app/data/repositories/tasks_repository.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class BlocDispatcher {
   final TasksRepository tasksRepository;
@@ -13,6 +15,7 @@ class BlocDispatcher {
   final SyncBloc syncBloc;
   final NetworkStatus networkStatus;
   final SyncStorage syncStorage;
+  final FirebaseAnalytics analytics;
 
   BlocDispatcher({
     required this.tasksRepository,
@@ -20,6 +23,7 @@ class BlocDispatcher {
     required this.syncBloc,
     required this.networkStatus,
     required this.syncStorage,
+    required this.analytics,
   }) {
     _needToSync = syncStorage.loadNeedToSync() ?? false;
 
@@ -67,6 +71,13 @@ class BlocDispatcher {
     networkStatus.isOnline
         ? syncBloc.add(SyncAddTaskRequested(task))
         : _setNeedToSync(true);
+    analytics.logEvent(
+      name: AnalyticsEvent.addTask.name,
+      parameters: {
+        AnalyticsParameter.taskId.name: task.id,
+        AnalyticsParameter.taskText.name: task.text,
+      },
+    );
   }
 
   void updateTask(Task task) {
@@ -82,6 +93,13 @@ class BlocDispatcher {
       changedAt: DateTime.now(),
     );
     updateTask(updatedTask);
+    analytics.logEvent(
+      name: AnalyticsEvent.toggleTaskAsDone.name,
+      parameters: {
+        AnalyticsParameter.taskId.name: task.id,
+        AnalyticsParameter.updatedValue.name: updatedTask.isDone.toString(),
+      },
+    );
   }
 
   void removeTask(String id) {
@@ -89,5 +107,11 @@ class BlocDispatcher {
     networkStatus.isOnline
         ? syncBloc.add(SyncRemoveTaskRequested(id))
         : _setNeedToSync(true);
+    analytics.logEvent(
+      name: AnalyticsEvent.removeTask.name,
+      parameters: {
+        AnalyticsParameter.taskId.name: id,
+      },
+    );
   }
 }

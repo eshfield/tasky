@@ -14,6 +14,7 @@ import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
 import 'package:app/firebase_options.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -26,9 +27,10 @@ abstract class DependencyContainer {
   BlocDispatcher get blocDispatcher;
   DeviceInfoService get deviceInfoService;
   NetworkStatus get networkStatus;
-  FirebaseRemoteConfig get remoteConfig;
   SyncBloc get syncBloc;
   TasksCubit get tasksCubit;
+  FirebaseAnalytics get analytics;
+  FirebaseRemoteConfig get remoteConfig;
   bool get isInitializedSuccessfully;
 }
 
@@ -40,11 +42,13 @@ class AppDependencyContainer implements DependencyContainer {
   @override
   late final NetworkStatus networkStatus;
   @override
-  late final FirebaseRemoteConfig remoteConfig;
-  @override
   late final SyncBloc syncBloc;
   @override
   late final TasksCubit tasksCubit;
+  @override
+  late final FirebaseAnalytics analytics;
+  @override
+  late final FirebaseRemoteConfig remoteConfig;
   @override
   late final bool isInitializedSuccessfully;
 
@@ -70,6 +74,7 @@ class AppDependencyContainer implements DependencyContainer {
         );
         return true;
       };
+      analytics = FirebaseAnalytics.instance;
       remoteConfig = FirebaseRemoteConfig.instance;
       await remoteConfig.fetchAndActivate();
 
@@ -109,6 +114,7 @@ class AppDependencyContainer implements DependencyContainer {
         syncBloc: syncBloc,
         networkStatus: networkStatus,
         syncStorage: syncStorage,
+        analytics: analytics,
       );
       // BlocDispatcher listens for NetworkStatus notifications,
       // so the listener must be ready before notifications start

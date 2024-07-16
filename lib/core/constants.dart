@@ -5,6 +5,20 @@ enum Env {
   prod,
 }
 
+enum AnalyticsEvent {
+  addTask,
+  removeTask,
+  toggleTaskAsDone,
+  screenNavigation,
+}
+
+enum AnalyticsParameter {
+  taskId,
+  taskText,
+  updatedValue,
+  navigationDestination,
+}
+
 const envArg = 'TASKY_ENV';
 // can't use Env.dev.name for default value because it is not a const
 const envArgDefaultValue = 'dev';

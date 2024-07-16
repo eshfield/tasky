@@ -1,5 +1,5 @@
 import 'package:app/core/di/dependency_container.dart';
-import 'package:app/core/di/remote_config.dart';
+import 'package:app/core/app_inherited_models/remote_config.dart';
 import 'package:app/core/extensions/l10n.dart';
 import 'package:app/core/theme/theme.dart';
 import 'package:app/core/routing.dart';
