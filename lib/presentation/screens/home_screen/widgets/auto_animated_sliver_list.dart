@@ -33,13 +33,12 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
   final _listKey = GlobalKey<SliverAnimatedListState>();
   var _isFirstRun = true;
   var _isVisible = true;
-  late VoidCallback _functionToRunLater;
+  VoidCallback? _functionToRunLater;
   late AutoAnimatedSliverList<T> _oldWidget;
 
   @override
   void initState() {
     super.initState();
-    _functionToRunLater = () {};
     // run initial list animation after SliverAnimatedList creation
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
@@ -97,8 +96,9 @@ class _AutoAnimatedSliverListState<T> extends State<AutoAnimatedSliverList<T>> {
         if (info.visibleFraction == 0) {
           _isVisible = false;
         } else {
-          if (_isVisible) return;
-          _functionToRunLater();
+          if (_isVisible || _functionToRunLater == null) return;
+          _functionToRunLater!();
+          _functionToRunLater = null;
           // rerun build to use actual itemBuilder
           setState(() {
             _isVisible = true;
