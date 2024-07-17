@@ -1,6 +1,6 @@
 import 'package:app/core/env_config.dart';
-import 'package:app/domain/bloc/sync_bloc.dart';
-import 'package:app/domain/bloc/tasks_cubit.dart';
+import 'package:app/domain/bloc/sync_bloc/sync_bloc.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
 import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';

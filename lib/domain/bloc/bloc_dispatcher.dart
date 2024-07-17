@@ -4,8 +4,8 @@ import 'package:app/core/constants.dart';
 import 'package:app/core/services/network_status.dart';
 import 'package:app/core/services/sync_storage.dart';
 import 'package:app/data/repositories/tasks_repository.dart';
-import 'package:app/domain/bloc/sync_bloc.dart';
-import 'package:app/domain/bloc/tasks_cubit.dart';
+import 'package:app/domain/bloc/sync_bloc/sync_bloc.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 

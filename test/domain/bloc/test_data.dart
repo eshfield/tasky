@@ -1,4 +1,4 @@
-import 'package:app/domain/bloc/tasks_cubit.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
 
 const deviceId = 'device1';

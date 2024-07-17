@@ -3,6 +3,8 @@ import 'package:app/domain/entities/task.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+part 'tasks_state.dart';
+
 class TasksCubit extends Cubit<TasksState> {
   final SettingsStorage settingsStorage;
 
@@ -41,37 +43,4 @@ class TasksCubit extends Cubit<TasksState> {
     settingsStorage.setShowDoneTasks(newShowDoneTasks);
     emit(state.copyWith(showDoneTasks: newShowDoneTasks));
   }
-}
-
-final class TasksState extends Equatable {
-  final List<Task> tasks;
-  final bool showDoneTasks;
-  final bool isInitialized;
-
-  const TasksState(
-    this.tasks, {
-    required this.showDoneTasks,
-    this.isInitialized = false,
-  });
-
-  List<Task> get tasksToDisplay =>
-      showDoneTasks ? tasks : tasks.where((task) => !task.isDone).toList();
-
-  int get doneTaskCount =>
-      tasks.fold(0, (acc, task) => acc + (task.isDone ? 1 : 0));
-
-  TasksState copyWith({
-    List<Task>? tasks,
-    bool? showDoneTasks,
-    bool? isInitialized,
-  }) {
-    return TasksState(
-      tasks ?? this.tasks,
-      showDoneTasks: showDoneTasks ?? this.showDoneTasks,
-      isInitialized: isInitialized ?? this.isInitialized,
-    );
-  }
-
-  @override
-  List<Object?> get props => [tasks, showDoneTasks, isInitialized];
 }

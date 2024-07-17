@@ -1,5 +1,5 @@
 import 'package:app/core/constants.dart';
-import 'package:app/domain/bloc/tasks_cubit.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:app/core/extensions/app_theme.dart';
 import 'package:flutter/material.dart';

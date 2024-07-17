@@ -1,5 +1,5 @@
 import 'package:app/data/repositories/tasks_repository.dart';
-import 'package:app/domain/bloc/sync_bloc.dart';
+import 'package:app/domain/bloc/sync_bloc/sync_bloc.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
