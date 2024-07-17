@@ -36,7 +36,7 @@ class RemoteConfigState extends State<RemoteConfig> {
 
     importanceColor = AppTheme.lightAppColors.red;
     final importanceColorHex =
-        widget.remoteConfig.getString(rcImportanceColorKey);
+        widget.remoteConfig.getString(AppConstants.rcImportanceColorKey);
     if (importanceColorHex.isNotEmpty) {
       importanceColor = ColorHex.fromHex(importanceColorHex);
     }
@@ -47,7 +47,8 @@ class RemoteConfigState extends State<RemoteConfig> {
 
   void _handleRemoteConfigUpdates(RemoteConfigUpdate event) async {
     await widget.remoteConfig.activate();
-    final hexColor = widget.remoteConfig.getString(rcImportanceColorKey);
+    final hexColor =
+        widget.remoteConfig.getString(AppConstants.rcImportanceColorKey);
     if (hexColor.isEmpty) return;
     setState(() {
       importanceColor = ColorHex.fromHex(hexColor);

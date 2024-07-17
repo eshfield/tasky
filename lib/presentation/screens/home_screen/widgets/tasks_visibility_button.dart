@@ -16,8 +16,8 @@ class TasksVisibilityButton extends StatelessWidget {
         tasksCubit.toggleShowDoneTasks();
         HomeScreen.of(context).scrollController.animateTo(
               0,
-              duration: appTopBarAnimationDuration,
-              curve: appTorBarCurve,
+              duration: AppConstants.appTopBarAnimationDuration,
+              curve: AppConstants.appTorBarCurve,
             );
       },
       icon: BlocBuilder<TasksCubit, TasksState>(

@@ -22,6 +22,6 @@ class DeviceInfoService {
       final info = await deviceInfo.iosInfo;
       id = info.identifierForVendor;
     }
-    deviceId = id ?? unknownDeviceId;
+    deviceId = id ?? AppConstants.unknownDeviceId;
   }
 }
