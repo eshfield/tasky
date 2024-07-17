@@ -22,7 +22,7 @@ enum AnalyticsParameter {
 const envArg = 'TASKY_ENV';
 // can't use Env.dev.name for default value because it is not a const
 const envArgDefaultValue = 'dev';
-const tokenArg = 'TASKY_TOKEN';
+const tokenArg = 'TASKY_API_TOKEN';
 
 const unknownDeviceId = 'UNKNOWN_DEVICE';
 
