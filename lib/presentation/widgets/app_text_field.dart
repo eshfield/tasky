@@ -47,6 +47,7 @@ class AppTextField extends StatelessWidget {
       ),
       minLines: minLines,
       maxLines: maxLines,
+      onTapOutside: (_) => FocusScope.of(context).unfocus(),
       style: context.appTextStyles.body.copyWith(
         color: context.appColors.labelPrimary,
       ),
