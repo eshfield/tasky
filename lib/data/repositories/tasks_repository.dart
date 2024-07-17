@@ -15,7 +15,7 @@ class TasksRepository {
     this.tasksStorage,
     this.networkStatus,
   ) {
-    _revision = tasksStorage.getRevision() ?? 0;
+    _revision = tasksStorage.getRevision();
   }
 
   late int _revision;
@@ -32,19 +32,16 @@ class TasksRepository {
 
   Future<List<Task>> getTasks() async {
     final storedTasks = tasksStorage.getTasks();
-    if (storedTasks != null) return storedTasks;
-    if (networkStatus.isOnline) {
+    if (storedTasks.isEmpty && networkStatus.isOnline) {
       final responseTasksDto = await tasksApi.getTasks();
       setRevision(responseTasksDto.revision);
       return responseTasksDto.tasks;
-    } else {
-      // first clean start from offline
-      return [];
     }
+    return storedTasks;
   }
 
   Future<void> updateTasks() async {
-    final storedTasks = tasksStorage.getTasks() ?? [];
+    final storedTasks = tasksStorage.getTasks();
     final responseTasksDto = await tasksApi.updateTasks(
       requestTasksDto: TasksDto(storedTasks, _revision),
       revision: _revision,

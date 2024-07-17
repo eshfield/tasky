@@ -9,21 +9,16 @@ class SyncStorage {
 
   SyncStorage(this.prefs);
 
-  bool? getNeedToSync() {
+  bool getNeedToSync() {
     try {
-      return prefs.getBool(needToSyncKey);
+      return prefs.getBool(needToSyncKey) ?? false;
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
+      return false;
     }
   }
 
-  void setNeedToSync(bool? needToSync) {
-    if (needToSync == null) {
-      prefs.remove(needToSyncKey);
-    } else {
+  void setNeedToSync(bool needToSync) =>
       prefs.setBool(needToSyncKey, needToSync);
-    }
-  }
 }

@@ -9,21 +9,16 @@ class SettingsStorage {
 
   SettingsStorage(this.prefs);
 
-  bool? getShowDoneTasks() {
+  bool getShowDoneTasks() {
     try {
-      return prefs.getBool(showDoneTasksKey);
+      return prefs.getBool(showDoneTasksKey) ?? false;
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
+      return false;
     }
   }
 
-  void setShowDoneTasks(bool? showDoneTasks) {
-    if (showDoneTasks == null) {
-      prefs.remove(showDoneTasksKey);
-    } else {
+  void setShowDoneTasks(bool showDoneTasks) =>
       prefs.setBool(showDoneTasksKey, showDoneTasks);
-    }
-  }
 }

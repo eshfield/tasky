@@ -13,15 +13,15 @@ class TasksStorage {
 
   TasksStorage(this.prefs);
 
-  List<Task>? getTasks() {
+  List<Task> getTasks() {
     try {
       final data = prefs.getString(tasksKey);
-      if (data == null) return null;
+      if (data == null) return [];
       return jsonDecode(data).map<Task>((json) => Task.fromJson(json)).toList();
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
+      return [];
     }
   }
 
@@ -30,21 +30,15 @@ class TasksStorage {
     prefs.setString(tasksKey, data);
   }
 
-  int? getRevision() {
+  int getRevision() {
     try {
-      return prefs.getInt(revisionKey);
+      return prefs.getInt(revisionKey) ?? 0;
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      return null;
+      return 0;
     }
   }
 
-  void setRevision(int? revision) {
-    if (revision == null) {
-      prefs.remove(revisionKey);
-    } else {
-      prefs.setInt(revisionKey, revision);
-    }
-  }
+  void setRevision(int revision) => prefs.setInt(revisionKey, revision);
 }

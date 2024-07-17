@@ -124,6 +124,8 @@ void main() {
       when(() => mockRemoteConfig.onConfigUpdated)
           .thenAnswer((_) => const Stream.empty());
       when(() => mockNetworkStatus.isOnline).thenReturn(true);
+      when(() => mockSettingsStorage.getShowDoneTasks()).thenReturn(false);
+      when(() => mockSyncStorage.getNeedToSync()).thenReturn(false);
       when(() => mockTasksApi.getTasks())
           .thenAnswer((_) async => TasksDto([startTask], revision));
       when(() => mockTasksApi.addTask(
@@ -135,6 +137,8 @@ void main() {
             named: 'revision',
             that: isA<int>(),
           ))).thenAnswer((_) async => FakeTaskDto());
+      when(() => mockTasksStorage.getTasks()).thenReturn([]);
+      when(() => mockTasksStorage.getRevision()).thenReturn(0);
 
       // real dependencies
       final tasksRepository = TasksRepository(

@@ -61,16 +61,18 @@ void main() {
   setUp(
     () {
       mockTasksApi = MockTasksApi();
+
       mockTasksStorage = MockTasksStorage();
+      when(() => mockTasksStorage.getTasks())
+          .thenAnswer((_) => storageResults.removeAt(0)!);
+      when(() => mockTasksStorage.getRevision()).thenReturn(0);
+
       mockNetworkStatus = MockNetworkStatus();
       tasksRepository = TasksRepository(
         mockTasksApi,
         mockTasksStorage,
         mockNetworkStatus,
       );
-
-      when(() => mockTasksStorage.getTasks())
-          .thenAnswer((_) => storageResults.removeAt(0));
 
       when(() => mockNetworkStatus.isOnline).thenReturn(true);
 
@@ -125,7 +127,7 @@ void main() {
       test(
         'getTasks',
         () async {
-          storageResults = [tasksFromStorage, null];
+          storageResults = [tasksFromStorage, []];
 
           // get tasks from local storage
           final actualTasksFromStorage = await tasksRepository.getTasks();

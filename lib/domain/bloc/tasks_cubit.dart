@@ -9,7 +9,7 @@ class TasksCubit extends Cubit<TasksState> {
   TasksCubit(this.settingsStorage)
       : super(TasksState(
           const [],
-          showDoneTasks: settingsStorage.getShowDoneTasks() ?? false,
+          showDoneTasks: settingsStorage.getShowDoneTasks(),
         ));
 
   void setTasks(List<Task> tasks) {
@@ -43,7 +43,7 @@ class TasksCubit extends Cubit<TasksState> {
   }
 }
 
-class TasksState extends Equatable {
+final class TasksState extends Equatable {
   final List<Task> tasks;
   final bool showDoneTasks;
   final bool isInitialized;
