@@ -19,7 +19,7 @@ enum AnalyticsParameter {
   navigationDestination,
 }
 
-abstract class AppConstants {
+abstract class AppConstant {
   static const envArg = 'TASKY_ENV';
   // can't use Env.dev.name for default value because it is not a const
   // as it requires by String.fromEnvironment() method

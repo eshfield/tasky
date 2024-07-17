@@ -2,14 +2,14 @@ import 'package:app/core/constants.dart';
 
 class EnvConfig {
   static const env = String.fromEnvironment(
-    AppConstants.envArg,
-    defaultValue: AppConstants.envArgDefaultValue,
+    AppConstant.envArg,
+    defaultValue: AppConstant.envArgDefaultValue,
   );
 
   static bool get isNotProd => env != Env.prod.name;
 
   static String get apiToken {
-    const token = String.fromEnvironment(AppConstants.tokenArg);
+    const token = String.fromEnvironment(AppConstant.tokenArg);
     if (token.isEmpty) throw Exception('Empty API token');
     return token;
   }

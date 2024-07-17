@@ -57,12 +57,12 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _handleScroll() {
     final offset = scrollController.offset;
-    if (offset > AppConstants.appTopBarHeight && !showAppBar) {
+    if (offset > AppConstant.appTopBarHeight && !showAppBar) {
       setState(() {
         showAppBar = true;
       });
     }
-    if (offset < AppConstants.appTopBarHeight && showAppBar) {
+    if (offset < AppConstant.appTopBarHeight && showAppBar) {
       setState(() {
         showAppBar = false;
       });
@@ -205,15 +205,15 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedPositioned(
-      top: showAppBar ? 0 : -AppConstants.appTopBarHeight,
+      top: showAppBar ? 0 : -AppConstant.appTopBarHeight,
       left: 0,
       right: 0,
-      curve: AppConstants.appTorBarCurve,
-      duration: AppConstants.appTopBarAnimationDuration,
+      curve: AppConstant.appTorBarCurve,
+      duration: AppConstant.appTopBarAnimationDuration,
       child: AnimatedOpacity(
         opacity: showAppBar ? 1 : 0,
-        curve: AppConstants.appTorBarCurve,
-        duration: AppConstants.appTopBarAnimationDuration,
+        curve: AppConstant.appTorBarCurve,
+        duration: AppConstant.appTopBarAnimationDuration,
         child: AppTopBar(
           title: context.l10n.homeTitle,
           trailing: const Padding(
