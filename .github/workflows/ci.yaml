@@ -1,0 +1,48 @@
+name: CI
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "19"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Get project dependencies
+        run: flutter pub get
+
+      - name: Check code formatting
+        run: dart format --set-exit-if-changed .
+      - name: Run linter check
+        run: flutter analyze
+
+      - name: Run unit tests
+        run: flutter test
+
+      - name: Build APK files
+        run: flutter build apk --dart-define=TASKY_ENV=prod --dart-define=TASKY_API_TOKEN=${{ secrets.TASKY_API_TOKEN }}
+
+      - name: Upload artifacts to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload artifacts to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIALS_FILE_CONTENT }}
+          file: build/app/outputs/flutter-apk/app-release.apk
