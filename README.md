@@ -43,7 +43,7 @@ adb shell 'am start -a android.intent.action.VIEW \
 ```
 
 ## APK
-Загрузить .apk файл можно в разделе [releases](https://github.com/eshfield/tasky/releases)
+Загрузить .apk файл можно в разделе [Releases](https://github.com/eshfield/tasky/releases) или забрать у последнего запуска в [GitHub Actions](https://github.com/eshfield/tasky/actions/)
 
 ## Локальный запуск
 Для корректной работы при локальном запуске необходимо указать токен авторизации:
