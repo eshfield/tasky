@@ -72,7 +72,8 @@ class _TasksList extends StatelessWidget {
     final orientation = MediaQuery.orientationOf(context);
     final deviceInfoService = HomeScreen.of(context).deviceInfoService;
     final splitListToColumns =
-        (orientation == Orientation.landscape) || deviceInfoService.isTablet;
+        (orientation == Orientation.landscape || deviceInfoService.isTablet) &&
+            tasks.length > 1;
     if (splitListToColumns) {
       return SliverAnimatedSwitcher(
         duration: const Duration(milliseconds: 250),
