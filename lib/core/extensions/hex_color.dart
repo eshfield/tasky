@@ -10,7 +10,10 @@ extension ColorHex on Color {
     try {
       return Color(int.parse(buffer.toString(), radix: 16));
     } catch (error, stackTrace) {
-      Logger().w(error, stackTrace: stackTrace);
+      Logger().w(
+        'Hex to Color conversion error: $error',
+        stackTrace: stackTrace,
+      );
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return Colors.green;
     }
