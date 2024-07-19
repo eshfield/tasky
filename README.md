@@ -48,7 +48,7 @@ adb shell 'am start -a android.intent.action.VIEW \
 ## Локальный запуск
 Для корректной работы при локальном запуске необходимо указать токен авторизации:
 ```
---dart-define=TOKEN=%YOUR_TOKEN%
+--dart-define=TASKY_API_TOKEN=%YOUR_TOKEN%
 ```
 
 ## Тесты
