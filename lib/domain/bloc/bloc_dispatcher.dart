@@ -1,55 +1,47 @@
 import 'dart:async';
 
-import 'package:app/data/services/network_status.dart';
-import 'package:app/data/sources/local_storage.dart';
+import 'package:app/core/services/network_status.dart';
+import 'package:app/core/services/sync_storage.dart';
+import 'package:app/data/repositories/tasks_repository.dart';
 import 'package:app/domain/bloc/sync_bloc.dart';
 import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/domain/models/task.dart';
-import 'package:logger/logger.dart';
+import 'package:app/domain/entities/task.dart';
 
 class BlocDispatcher {
+  final TasksRepository tasksRepository;
   final TasksCubit tasksCubit;
   final SyncBloc syncBloc;
-  final LocalStorage localStorage;
   final NetworkStatus networkStatus;
+  final SyncStorage syncStorage;
 
   BlocDispatcher({
+    required this.tasksRepository,
     required this.tasksCubit,
     required this.syncBloc,
-    required this.localStorage,
     required this.networkStatus,
+    required this.syncStorage,
   }) {
-    // save tasks to local storage
+    _needToSync = syncStorage.loadNeedToSync() ?? false;
+
+    // autosave tasks to local storage
     tasksCubit.stream.listen((state) {
       if (state.isInitialized) {
-        localStorage.saveTasks(state.tasks);
+        tasksRepository.saveTasksLocally(state.tasks);
       }
     });
+
     // sync data when backed to online
     networkStatus.addListener(() {
       if (networkStatus.isOnline && _needToSync) {
-        final storedTasks = localStorage.loadTasks();
-        if (storedTasks == null) {
-          Logger().w('storedTasks is null');
-          return;
-        }
-        final storedRevision = localStorage.loadRevision() ?? 0;
-        syncBloc.add(SyncUpdateTasksRequested(storedTasks, storedRevision));
+        syncTasks();
       }
     });
   }
 
-  var _needToSync = false;
+  late bool _needToSync;
 
-  void _markAsNeedToSync() => _needToSync = true;
-
-  void init() {
-    final storedTasks = localStorage.loadTasks();
-    if (storedTasks != null) {
-      tasksCubit.setTasks(storedTasks);
-      return;
-    }
-    // no local saved tasks → rolling up backup from server
+  // the method is separated in order to run it from the error screen widget
+  void getInitialTasks() {
     late final StreamSubscription<SyncState> subscription;
     subscription = syncBloc.stream.listen((state) {
       if (state is GetTasksSuccess) {
@@ -60,18 +52,28 @@ class BlocDispatcher {
     syncBloc.add(SyncGetTasksRequested());
   }
 
+  void syncTasks() {
+    syncBloc.add(SyncUpdateTasksRequested());
+    _setNeedToSync(false);
+  }
+
+  void _setNeedToSync(bool value) {
+    _needToSync = value;
+    syncStorage.saveNeedToSync(value);
+  }
+
   void addTask(Task task) {
     tasksCubit.addTask(task);
     networkStatus.isOnline
         ? syncBloc.add(SyncAddTaskRequested(task))
-        : _markAsNeedToSync();
+        : _setNeedToSync(true);
   }
 
   void updateTask(Task task) {
     tasksCubit.updateTask(task);
     networkStatus.isOnline
         ? syncBloc.add(SyncUpdateTaskRequested(task))
-        : _markAsNeedToSync();
+        : _setNeedToSync(true);
   }
 
   void toggleTaskAsDone(Task task) {
@@ -86,6 +88,6 @@ class BlocDispatcher {
     tasksCubit.removeTask(id);
     networkStatus.isOnline
         ? syncBloc.add(SyncRemoveTaskRequested(id))
-        : _markAsNeedToSync();
+        : _setNeedToSync(true);
   }
 }

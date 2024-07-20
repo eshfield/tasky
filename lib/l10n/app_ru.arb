@@ -1,7 +1,7 @@
 {
   "@@locale": "ru",
-  "appTitle": "Мои дела",
-  "addTaskTooltip": "Добавить задачу",
+  "appTitle": "Tasky",
+  "homeTitle": "Мои дела",
   "tasksDone": "Выполнено — {count}",
   "@tasksDone": {
     "placeholders": {
@@ -26,5 +26,11 @@
   "loadingErrorText": "Попробуйте ещё раз немного позже",
   "onlineSnackBar": "Соединение восстановлено",
   "offlineSnackBar": "Нет соединения, offline-режим",
-  "syncError": "Ошибка синхронизации"
+  "syncError": "Ошибка синхронизации",
+  "initErrorTitle": "Ошибка инициализации",
+  "initErrorText": "Попробуйте перезапустить приложение или обратитесь к разработчику",
+  "forceSyncTitle": "Принудительная синхронизация",
+  "forceSyncText": "Все данные на сервере будут заменены текущим списком задач",
+  "forceSyncCancel": "Отмена",
+  "forceSyncRun": "Запуск"
 }
