@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:app/core/constants.dart';
 import 'package:app/core/services/network_status.dart';
 import 'package:app/core/services/sync_storage.dart';
 import 'package:app/data/repositories/tasks_repository.dart';
-import 'package:app/domain/bloc/sync_bloc.dart';
-import 'package:app/domain/bloc/tasks_cubit.dart';
+import 'package:app/domain/bloc/sync_bloc/sync_bloc.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class BlocDispatcher {
   final TasksRepository tasksRepository;
@@ -13,6 +15,7 @@ class BlocDispatcher {
   final SyncBloc syncBloc;
   final NetworkStatus networkStatus;
   final SyncStorage syncStorage;
+  final FirebaseAnalytics analytics;
 
   BlocDispatcher({
     required this.tasksRepository,
@@ -20,11 +23,12 @@ class BlocDispatcher {
     required this.syncBloc,
     required this.networkStatus,
     required this.syncStorage,
+    required this.analytics,
   }) {
-    _needToSync = syncStorage.loadNeedToSync() ?? false;
+    _needToSync = syncStorage.getNeedToSync();
 
     // autosave tasks to local storage
-    tasksCubit.stream.listen((state) {
+    _tasksSubscription = tasksCubit.stream.listen((state) {
       if (state.isInitialized) {
         tasksRepository.saveTasksLocally(state.tasks);
       }
@@ -39,6 +43,7 @@ class BlocDispatcher {
   }
 
   late bool _needToSync;
+  late StreamSubscription<TasksState> _tasksSubscription;
 
   // the method is separated in order to run it from the error screen widget
   void getInitialTasks() {
@@ -59,7 +64,7 @@ class BlocDispatcher {
 
   void _setNeedToSync(bool value) {
     _needToSync = value;
-    syncStorage.saveNeedToSync(value);
+    syncStorage.setNeedToSync(value);
   }
 
   void addTask(Task task) {
@@ -67,6 +72,13 @@ class BlocDispatcher {
     networkStatus.isOnline
         ? syncBloc.add(SyncAddTaskRequested(task))
         : _setNeedToSync(true);
+    analytics.logEvent(
+      name: AnalyticsEvent.addTask.name,
+      parameters: {
+        AnalyticsParameter.taskId.name: task.id,
+        AnalyticsParameter.taskText.name: task.text,
+      },
+    );
   }
 
   void updateTask(Task task) {
@@ -82,6 +94,13 @@ class BlocDispatcher {
       changedAt: DateTime.now(),
     );
     updateTask(updatedTask);
+    analytics.logEvent(
+      name: AnalyticsEvent.toggleTaskAsDone.name,
+      parameters: {
+        AnalyticsParameter.taskId.name: task.id,
+        AnalyticsParameter.updatedValue.name: updatedTask.isDone.toString(),
+      },
+    );
   }
 
   void removeTask(String id) {
@@ -89,5 +108,15 @@ class BlocDispatcher {
     networkStatus.isOnline
         ? syncBloc.add(SyncRemoveTaskRequested(id))
         : _setNeedToSync(true);
+    analytics.logEvent(
+      name: AnalyticsEvent.removeTask.name,
+      parameters: {
+        AnalyticsParameter.taskId.name: id,
+      },
+    );
+  }
+
+  void dispose() {
+    _tasksSubscription.cancel();
   }
 }

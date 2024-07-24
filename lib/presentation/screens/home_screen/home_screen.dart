@@ -1,18 +1,19 @@
 import 'package:app/core/constants.dart';
 import 'package:app/core/di/dependency_container.dart';
+import 'package:app/core/services/device_info_service.dart';
 import 'package:app/core/services/network_status.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
-import 'package:app/domain/bloc/sync_bloc.dart';
-import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/domain/bloc/sync_bloc/sync_bloc.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
 import 'package:app/presentation/screens/home_screen/widgets/header.dart';
-import 'package:app/presentation/screens/home_screen/widgets/task_list.dart';
+import 'package:app/presentation/screens/home_screen/widgets/tasks_list.dart';
 import 'package:app/presentation/widgets/app_error.dart';
 import 'package:app/presentation/widgets/app_loader.dart';
 import 'package:app/presentation/widgets/app_snack_bar.dart';
 import 'package:app/presentation/widgets/app_top_bar.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:app/core/routing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +32,7 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   late final DependencyContainer dependencyContainer;
   late final BlocDispatcher blocDispatcher;
+  late final DeviceInfoService deviceInfoService;
   late final NetworkStatus networkStatus;
   late final SyncBloc syncBloc;
   late final TasksCubit tasksCubit;
@@ -43,6 +45,7 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     dependencyContainer = context.read<DependencyContainer>();
     blocDispatcher = dependencyContainer.blocDispatcher;
+    deviceInfoService = dependencyContainer.deviceInfoService;
     networkStatus = dependencyContainer.networkStatus;
     syncBloc = dependencyContainer.syncBloc;
     tasksCubit = dependencyContainer.tasksCubit;
@@ -54,12 +57,12 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _handleScroll() {
     final offset = scrollController.offset;
-    if (offset > appTopBarHeight && !showAppBar) {
+    if (offset > AppConstant.appTopBarHeight && !showAppBar) {
       setState(() {
         showAppBar = true;
       });
     }
-    if (offset < appTopBarHeight && showAppBar) {
+    if (offset < AppConstant.appTopBarHeight && showAppBar) {
       setState(() {
         showAppBar = false;
       });
@@ -156,7 +159,7 @@ class _Content extends StatelessWidget {
                         hasScrollBody: false,
                         child: _Empty(),
                       )
-                    : TaskList(tasksToDisplay);
+                    : TasksList(tasksToDisplay);
               }
               return const _InitialLoadingContent();
             },
@@ -202,15 +205,15 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedPositioned(
-      top: showAppBar ? 0 : -appTopBarHeight,
+      top: showAppBar ? 0 : -AppConstant.appTopBarHeight,
       left: 0,
       right: 0,
-      curve: appCurve,
-      duration: appTopBarAnimationDuration,
+      curve: AppConstant.appTorBarCurve,
+      duration: AppConstant.appTopBarAnimationDuration,
       child: AnimatedOpacity(
         opacity: showAppBar ? 1 : 0,
-        curve: appCurve,
-        duration: appTopBarAnimationDuration,
+        curve: AppConstant.appTorBarCurve,
+        duration: AppConstant.appTopBarAnimationDuration,
         child: AppTopBar(
           title: context.l10n.homeTitle,
           trailing: const Padding(

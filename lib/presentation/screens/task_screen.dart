@@ -1,10 +1,11 @@
 import 'package:app/core/di/dependency_container.dart';
+import 'package:app/core/app_inherited_models/remote_config.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
 import 'package:app/domain/entities/task.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/widgets/app_top_bar.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:app/presentation/widgets/app_date_picker.dart';
 import 'package:app/presentation/widgets/app_dropdown_menu.dart';
 import 'package:app/presentation/widgets/app_switch.dart';
@@ -92,7 +93,9 @@ class TaskScreenState extends State<TaskScreen> {
           child: Column(
             children: [
               _TopBar(),
-              Expanded(child: _Content()),
+              Expanded(
+                child: _Content(),
+              ),
             ],
           ),
         ),
@@ -235,6 +238,7 @@ class _ImportanceMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final importance = TaskScreen.importanceOf(context);
+    final importanceColor = RemoteConfig.importanceColorOf(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -244,7 +248,7 @@ class _ImportanceMenu extends StatelessWidget {
           key: const ValueKey('taskImportanceMenu'),
           initialSelection: importance,
           textColor: importance == Importance.important
-              ? context.appColors.red
+              ? importanceColor
               : context.appColors.labelPrimary,
           onSelected: TaskScreen.of(context).setImportance,
           dropdownMenuEntries: Importance.values.map((value) {
@@ -256,7 +260,7 @@ class _ImportanceMenu extends StatelessWidget {
                 labelText,
                 style: context.appTextStyles.body.copyWith(
                   color: value == Importance.important
-                      ? context.appColors.red
+                      ? importanceColor
                       : context.appColors.labelPrimary,
                 ),
               ),
@@ -376,29 +380,31 @@ class _SaveButton extends StatelessWidget {
         if (!formKey.currentState!.validate()) return;
         final text = TaskScreen.of(context).textController.text.trim();
         final importance = TaskScreen.of(context).importance;
+        final deadline = TaskScreen.of(context).deadline;
         final now = DateTime.now();
         final deviceId = TaskScreen.of(context).deviceInfoService.deviceId;
+        final blocDispatcher = TaskScreen.of(context).blocDispatcher;
         if (TaskScreen.of(context).isEditing) {
           final taskToEdit = TaskScreen.of(context).widget.task;
           final editedTask = taskToEdit!.copyWith(
             text: text,
             importance: importance,
-            deadline: () => TaskScreen.of(context).deadline,
+            deadline: deadline,
             changedAt: now,
             lastUpdatedBy: deviceId,
           );
-          TaskScreen.of(context).blocDispatcher.updateTask(editedTask);
+          blocDispatcher.updateTask(editedTask);
         } else {
           final taskToAdd = Task(
             id: const Uuid().v4(),
             text: text,
             importance: importance,
-            deadline: TaskScreen.of(context).deadline,
+            deadline: deadline,
             createdAt: now,
             changedAt: now,
             lastUpdatedBy: deviceId,
           );
-          TaskScreen.of(context).blocDispatcher.addTask(taskToAdd);
+          blocDispatcher.addTask(taskToAdd);
         }
         context.goNamed(AppRoute.home.name);
       },

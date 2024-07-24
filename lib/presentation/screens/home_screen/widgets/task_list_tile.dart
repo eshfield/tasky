@@ -1,6 +1,7 @@
+import 'package:app/core/app_inherited_models/remote_config.dart';
 import 'package:app/domain/entities/task.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/l10n.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:app/core/routing.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -8,14 +9,10 @@ import 'package:go_router/go_router.dart';
 
 class TaskListTile extends StatelessWidget {
   final Task task;
-  final bool isFirst;
-  final bool isLast;
 
   const TaskListTile(
     this.task, {
     super.key,
-    required this.isFirst,
-    required this.isLast,
   });
 
   @override
@@ -23,7 +20,6 @@ class TaskListTile extends StatelessWidget {
     final blocDispatcher = HomeScreen.of(context).blocDispatcher;
     return TaskListTileInheritedWidget(
       task: task,
-      isFirst: isFirst,
       child: ClipRRect(
         clipBehavior: Clip.hardEdge,
         child: Dismissible(
@@ -31,26 +27,24 @@ class TaskListTile extends StatelessWidget {
           background: const _Background(),
           secondaryBackground: const _SecondaryBackground(),
           confirmDismiss: (direction) async {
-            // no need to dismiss task with "mark as done" action
             if (direction == DismissDirection.startToEnd) {
               blocDispatcher.toggleTaskAsDone(task);
-              return false;
+            } else if (direction == DismissDirection.endToStart) {
+              blocDispatcher.removeTask(task.id);
             }
-            return true;
+            // we don't need built-in dismiss animation since we have own one
+            return false;
           },
-          onDismissed: (_) => blocDispatcher.removeTask(task.id),
           child: Container(
             alignment: Alignment.centerLeft,
-            margin: EdgeInsets.only(
-              top: isFirst ? 8 : 0,
-              bottom: isLast ? 8 : 0,
-            ),
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _MarkAsDoneCheckbox(),
-                Expanded(child: _TextLine()),
+                Expanded(
+                  child: _TextLine(),
+                ),
                 SizedBox(width: 12),
                 _EditButton(),
               ],
@@ -64,12 +58,10 @@ class TaskListTile extends StatelessWidget {
 
 class TaskListTileInheritedWidget extends InheritedWidget {
   final Task task;
-  final bool isFirst;
 
   const TaskListTileInheritedWidget({
     super.key,
     required this.task,
-    required this.isFirst,
     required super.child,
   });
 
@@ -91,13 +83,9 @@ class _Background extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFirst = TaskListTileInheritedWidget.of(context).isFirst;
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.green,
-        borderRadius: isFirst
-            ? const BorderRadius.only(topLeft: Radius.circular(12))
-            : BorderRadius.zero,
       ),
       child: Align(
         alignment: Alignment.centerLeft,
@@ -118,13 +106,9 @@ class _SecondaryBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFirst = TaskListTileInheritedWidget.of(context).isFirst;
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.red,
-        borderRadius: isFirst
-            ? const BorderRadius.only(topRight: Radius.circular(12))
-            : BorderRadius.zero,
       ),
       child: Align(
         alignment: Alignment.centerRight,
@@ -147,6 +131,7 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
     final isImportant = task.importance == Importance.important;
+    final importanceColor = RemoteConfig.importanceColorOf(context);
     return Checkbox(
       fillColor: WidgetStateProperty.resolveWith(
         (states) {
@@ -154,15 +139,14 @@ class _MarkAsDoneCheckbox extends StatelessWidget {
             return context.appColors.green;
           }
           if (isImportant) {
-            return context.appColors.red.withOpacity(0.16);
+            return importanceColor.withOpacity(0.16);
           }
           return Colors.transparent;
         },
       ),
       side: BorderSide(
-        color: isImportant
-            ? context.appColors.red
-            : context.appColors.supportSeparator,
+        color:
+            isImportant ? importanceColor : context.appColors.supportSeparator,
         width: 2,
       ),
       value: task.isDone,
@@ -213,6 +197,7 @@ class _TaskText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final task = TaskListTileInheritedWidget.of(context).task;
+    final importanceColor = RemoteConfig.importanceColorOf(context);
     return RichText(
       text: TextSpan(
         children: [
@@ -228,7 +213,7 @@ class _TaskText extends StatelessWidget {
                 Importance.basic => const SizedBox.shrink(),
                 Importance.important => Icon(
                     Icons.arrow_upward,
-                    color: context.appColors.red,
+                    color: importanceColor,
                     size: 20,
                   ),
               },

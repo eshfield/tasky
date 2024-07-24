@@ -15,14 +15,14 @@ class TasksRepository {
     this.tasksStorage,
     this.networkStatus,
   ) {
-    _revision = tasksStorage.loadRevision() ?? 0;
+    _revision = tasksStorage.getRevision();
   }
 
   late int _revision;
 
   void setRevision(int value) {
     _revision = value;
-    tasksStorage.saveRevision(value);
+    tasksStorage.setRevision(value);
   }
 
   Future<void> getRevision() async {
@@ -31,20 +31,17 @@ class TasksRepository {
   }
 
   Future<List<Task>> getTasks() async {
-    final storedTasks = tasksStorage.loadTasks();
-    if (storedTasks != null) return storedTasks;
-    if (networkStatus.isOnline) {
+    final storedTasks = tasksStorage.getTasks();
+    if (storedTasks.isEmpty && networkStatus.isOnline) {
       final responseTasksDto = await tasksApi.getTasks();
       setRevision(responseTasksDto.revision);
       return responseTasksDto.tasks;
-    } else {
-      // first clean start from offline
-      return [];
     }
+    return storedTasks;
   }
 
   Future<void> updateTasks() async {
-    final storedTasks = tasksStorage.loadTasks() ?? [];
+    final storedTasks = tasksStorage.getTasks();
     final responseTasksDto = await tasksApi.updateTasks(
       requestTasksDto: TasksDto(storedTasks, _revision),
       revision: _revision,
@@ -52,7 +49,7 @@ class TasksRepository {
     setRevision(responseTasksDto.revision);
   }
 
-  void saveTasksLocally(List<Task> tasks) => tasksStorage.saveTasks(tasks);
+  void saveTasksLocally(List<Task> tasks) => tasksStorage.setTasks(tasks);
 
   Future<void> addTask(Task task) async {
     final responseTaskDto = await tasksApi.addTask(

@@ -1,4 +1,4 @@
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class AppTextField extends StatelessWidget {
@@ -47,6 +47,7 @@ class AppTextField extends StatelessWidget {
       ),
       minLines: minLines,
       maxLines: maxLines,
+      onTapOutside: (_) => FocusScope.of(context).unfocus(),
       style: context.appTextStyles.body.copyWith(
         color: context.appColors.labelPrimary,
       ),

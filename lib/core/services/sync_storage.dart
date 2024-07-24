@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,20 +9,16 @@ class SyncStorage {
 
   SyncStorage(this.prefs);
 
-  bool? loadNeedToSync() {
+  bool getNeedToSync() {
     try {
-      return prefs.getBool(needToSyncKey);
+      return prefs.getBool(needToSyncKey) ?? false;
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
-      return null;
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      return false;
     }
   }
 
-  void saveNeedToSync(bool? needToSync) {
-    if (needToSync == null) {
-      prefs.remove(needToSyncKey);
-    } else {
+  void setNeedToSync(bool needToSync) =>
       prefs.setBool(needToSyncKey, needToSync);
-    }
-  }
 }

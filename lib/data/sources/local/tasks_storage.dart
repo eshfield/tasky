@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app/domain/entities/task.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,36 +13,32 @@ class TasksStorage {
 
   TasksStorage(this.prefs);
 
-  List<Task>? loadTasks() {
+  List<Task> getTasks() {
     try {
       final data = prefs.getString(tasksKey);
-      if (data == null) return null;
+      if (data == null) return [];
       return jsonDecode(data).map<Task>((json) => Task.fromJson(json)).toList();
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
-      return null;
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      return [];
     }
   }
 
-  void saveTasks(List<Task> tasks) {
+  void setTasks(List<Task> tasks) {
     final data = jsonEncode(tasks);
     prefs.setString(tasksKey, data);
   }
 
-  int? loadRevision() {
+  int getRevision() {
     try {
-      return prefs.getInt(revisionKey);
+      return prefs.getInt(revisionKey) ?? 0;
     } catch (error, stackTrace) {
       Logger().e(error, stackTrace: stackTrace);
-      return null;
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      return 0;
     }
   }
 
-  void saveRevision(int? revision) {
-    if (revision == null) {
-      prefs.remove(revisionKey);
-    } else {
-      prefs.setInt(revisionKey, revision);
-    }
-  }
+  void setRevision(int revision) => prefs.setInt(revisionKey, revision);
 }

@@ -1,9 +1,10 @@
-import 'package:app/domain/bloc/sync_bloc.dart';
-import 'package:app/domain/bloc/tasks_cubit.dart';
-import 'package:app/core/extensions/l10n_extension.dart';
+import 'package:app/core/env_config.dart';
+import 'package:app/domain/bloc/sync_bloc/sync_bloc.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
+import 'package:app/core/extensions/l10n.dart';
 import 'package:app/presentation/screens/home_screen/home_screen.dart';
 import 'package:app/presentation/screens/home_screen/widgets/tasks_visibility_button.dart';
-import 'package:app/core/extensions/app_theme_extension.dart';
+import 'package:app/core/extensions/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,25 +18,37 @@ class Header extends StatelessWidget {
       width: double.infinity,
       height: 124,
       padding: const EdgeInsets.only(left: 60, right: 20),
-      child: const Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
+          const Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: _Title()),
-              SizedBox(width: 16),
-              _SyncIcon(),
+              Row(
+                children: [
+                  Expanded(
+                    child: _Title(),
+                  ),
+                  SizedBox(width: 16),
+                  _SyncIcon(),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _DoneTasksCounter(),
+                  ),
+                  SizedBox(width: 16),
+                  TasksVisibilityButton(),
+                ],
+              ),
             ],
           ),
-          SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(child: _DoneTasksCounter()),
-              SizedBox(width: 16),
-              TasksVisibilityButton(),
-            ],
-          ),
+          if (EnvConfig.isNotProd)
+            const Positioned(
+              top: 4,
+              child: _EnvLabel(),
+            ),
         ],
       ),
     );
@@ -180,6 +193,27 @@ class _DoneTasksCounter extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         );
       },
+    );
+  }
+}
+
+class _EnvLabel extends StatelessWidget {
+  const _EnvLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: context.appColors.labelPrimary),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      child: Text(
+        EnvConfig.env.toUpperCase(),
+        style: context.appTextStyles.body.copyWith(
+          color: context.appColors.labelPrimary,
+        ),
+        textAlign: TextAlign.end,
+      ),
     );
   }
 }

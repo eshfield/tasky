@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 
 class NetworkStatus extends ChangeNotifier {
   late bool _isOnline;
+  late StreamSubscription<List<ConnectivityResult>> _subscription;
 
   bool get isOnline => _isOnline;
 
   Future<void> init() async {
     final result = await Connectivity().checkConnectivity();
     _checkResult(result, checkIdentity: false);
-    Connectivity().onConnectivityChanged.listen(_checkResult);
+    _subscription = Connectivity().onConnectivityChanged.listen(_checkResult);
   }
 
   void _checkResult(List<ConnectivityResult> result, {checkIdentity = true}) {
@@ -20,5 +21,11 @@ class NetworkStatus extends ChangeNotifier {
     if (checkIdentity && status == _isOnline) return;
     _isOnline = status;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }

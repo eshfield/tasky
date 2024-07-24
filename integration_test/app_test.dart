@@ -1,6 +1,7 @@
 import 'package:app/core/di/dependency_container.dart';
 import 'package:app/core/services/device_info_service.dart';
 import 'package:app/core/services/network_status.dart';
+import 'package:app/core/services/settings_storage.dart';
 import 'package:app/core/services/sync_storage.dart';
 import 'package:app/data/dtos/task_dto.dart';
 import 'package:app/data/dtos/tasks_dto.dart';
@@ -8,10 +9,12 @@ import 'package:app/data/repositories/tasks_repository.dart';
 import 'package:app/data/sources/local/tasks_storage.dart';
 import 'package:app/data/sources/remote/tasks_api.dart';
 import 'package:app/domain/bloc/bloc_dispatcher.dart';
-import 'package:app/domain/bloc/sync_bloc.dart';
-import 'package:app/domain/bloc/tasks_cubit.dart';
+import 'package:app/domain/bloc/sync_bloc/sync_bloc.dart';
+import 'package:app/domain/bloc/tasks_cubit/tasks_cubit.dart';
 import 'package:app/domain/entities/task.dart';
 import 'package:app/main.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +29,12 @@ const taskToAddText = 'New task';
 class MockDeviceInfoService extends Mock implements DeviceInfoService {}
 
 class MockNetworkStatus extends Mock implements NetworkStatus {}
+
+class MockAnalytics extends Mock implements FirebaseAnalytics {}
+
+class MockRemoteConfig extends Mock implements FirebaseRemoteConfig {}
+
+class MockSettingsStorage extends Mock implements SettingsStorage {}
 
 class MockSyncStorage extends Mock implements SyncStorage {}
 
@@ -52,6 +61,10 @@ class AppTestDependencyContainer implements DependencyContainer {
   @override
   final TasksCubit tasksCubit;
   @override
+  late final FirebaseAnalytics analytics;
+  @override
+  final MockRemoteConfig remoteConfig;
+  @override
   final bool isInitializedSuccessfully;
 
   AppTestDependencyContainer({
@@ -60,6 +73,8 @@ class AppTestDependencyContainer implements DependencyContainer {
     required this.networkStatus,
     required this.syncBloc,
     required this.tasksCubit,
+    required this.analytics,
+    required this.remoteConfig,
     this.isInitializedSuccessfully = true,
   });
 }
@@ -90,12 +105,27 @@ void main() {
       );
 
       // mocked dependencies
+      final mockAnalytics = MockAnalytics();
+      final mockRemoteConfig = MockRemoteConfig();
       final mockNetworkStatus = MockNetworkStatus();
+      final mockSettingsStorage = MockSettingsStorage();
       final mockSyncStorage = MockSyncStorage();
       mockTasksApi = MockTasksApi();
       final mockTasksStorage = MockTasksStorage();
 
+      when(
+        () => mockAnalytics.logEvent(
+          name: any(named: 'name', that: isA<String>()),
+          parameters: (any(named: 'parameters', that: isA<Map>())),
+        ),
+      ).thenAnswer((_) async => {});
+      when(() => mockRemoteConfig.getString(any(that: isA<String>())))
+          .thenReturn('');
+      when(() => mockRemoteConfig.onConfigUpdated)
+          .thenAnswer((_) => const Stream.empty());
       when(() => mockNetworkStatus.isOnline).thenReturn(true);
+      when(() => mockSettingsStorage.getShowDoneTasks()).thenReturn(false);
+      when(() => mockSyncStorage.getNeedToSync()).thenReturn(false);
       when(() => mockTasksApi.getTasks())
           .thenAnswer((_) async => TasksDto([startTask], revision));
       when(() => mockTasksApi.addTask(
@@ -107,6 +137,8 @@ void main() {
             named: 'revision',
             that: isA<int>(),
           ))).thenAnswer((_) async => FakeTaskDto());
+      when(() => mockTasksStorage.getTasks()).thenReturn([]);
+      when(() => mockTasksStorage.getRevision()).thenReturn(0);
 
       // real dependencies
       final tasksRepository = TasksRepository(
@@ -114,7 +146,7 @@ void main() {
         mockTasksStorage,
         mockNetworkStatus,
       );
-      final tasksCubit = TasksCubit();
+      final tasksCubit = TasksCubit(mockSettingsStorage);
       final syncBloc = SyncBloc(tasksRepository);
       final blocDispatcher = BlocDispatcher(
         tasksRepository: tasksRepository,
@@ -122,6 +154,7 @@ void main() {
         syncBloc: syncBloc,
         networkStatus: mockNetworkStatus,
         syncStorage: mockSyncStorage,
+        analytics: mockAnalytics,
       );
       final deviceInfoService = DeviceInfoService();
       await deviceInfoService.init();
@@ -131,6 +164,8 @@ void main() {
         deviceInfoService: deviceInfoService,
         networkStatus: mockNetworkStatus,
         syncBloc: syncBloc,
+        analytics: mockAnalytics,
+        remoteConfig: mockRemoteConfig,
         tasksCubit: tasksCubit,
       );
     },
@@ -155,10 +190,10 @@ void main() {
       testWidgets(
         'add task',
         (tester) async {
-          await tester.pumpWidget(MainApp(dependencyContainer));
+          await tester.pumpWidget(App(dependencyContainer));
 
           // wait initial tasks loading
-          await tester.pumpAndSettle(const Duration(seconds: 1));
+          await tester.pumpAndSettle();
           expect(find.byKey(ValueKey(startTask.id)), findsOneWidget);
 
           final startTaskTile = findTaskTile(startTask.text);
